@@ -45,7 +45,7 @@ public struct WidgetData: Decodable {
     
     public let widgetId: Int?
     public let type: String?
-    public let widget: [Widget]?
+    public let widget: [ChatBotWidget]?
     
     enum CodingKeys: String, CodingKey {
         case widgetId
@@ -56,12 +56,12 @@ public struct WidgetData: Decodable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.widgetId = try container.decodeIfPresent(Int.self, forKey: .widgetId)
         self.type = try container.decodeIfPresent(String.self, forKey: .type)
-        self.widget = try container.decodeIfPresent([Widget].self, forKey: .widget)
+        self.widget = try container.decodeIfPresent([ChatBotWidget].self, forKey: .widget)
     }
     
 }
 
-public struct Widget: Decodable, Hashable {
+public struct ChatBotWidget: Decodable, Hashable {
     
     public var id: UUID = UUID()
     public var imageURL: String?

@@ -20,7 +20,7 @@ struct ChatMessageScrollView: View {
     @FocusState.Binding var isFocused: Bool
     
     var suggestedReplyAction: ((String)->Void)?
-    var widgetAction: ((Widget?)->Void)?
+    var widgetAction: ((ChatBotWidget?)->Void)?
     
     
     // MARK: - BODY

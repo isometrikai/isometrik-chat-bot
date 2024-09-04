@@ -34,7 +34,7 @@ struct ChatView: View {
                     sendMessage(message: replyMessage)
                 },
                 widgetAction: { widget in
-                    viewModel.delegate?.didWidgetTapped(withData: widget)
+                    viewModel.delegate?.navigateFromBot(withData: widget, forType: .dish)
                 }
             )
             MessageToolBarView(

@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-public struct LaunchView: View, ChatExternalDelegate {
+public struct LaunchView: View {
     
     // MARK: - PROPERTIES
     
@@ -77,8 +77,17 @@ public struct LaunchView: View, ChatExternalDelegate {
         }
     }
     
-    func didWidgetTapped(withData: Widget?) {
+    func didWidgetTapped(withData: ChatBotWidget?) {
         guard let withData else { return }
         print("StoreId: \(withData.storeId ?? "")")
     }
+}
+
+
+extension LaunchView: ChatBotDelegate {
+    
+    public func navigateFromBot(withData: ChatBotWidget?, forType: WidgetType?) {
+        viewModel.delegate.navigateFromBot(withData: withData, forType: forType)
+    }
+    
 }

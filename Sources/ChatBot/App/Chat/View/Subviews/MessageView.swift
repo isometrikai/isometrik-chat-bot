@@ -14,7 +14,7 @@ struct MessageView: View {
     var appTheme: AppTheme
     var message: CustomMessageModel
     var gptUIPreference: MyGptUIPreferences?
-    var widgetAction: ((Widget?)->Void)?
+    var widgetAction: ((ChatBotWidget?)->Void)?
     
     private var leadingPadding: CGFloat {
         message.isFromUser ? 40 : 0

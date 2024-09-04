@@ -11,8 +11,8 @@ struct WidgetView: View {
     
     // MARK: - PROPERTIES
     var appTheme: AppTheme
-    var widgetData: Widget?
-    var widgetTappedAction: ((Widget?) -> Void)?
+    var widgetData: ChatBotWidget?
+    var widgetTappedAction: ((ChatBotWidget?) -> Void)?
     
     // MARK: - BODY
     

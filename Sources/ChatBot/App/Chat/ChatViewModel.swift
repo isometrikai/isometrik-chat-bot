@@ -8,8 +8,13 @@
 import Foundation
 import CryptoKit
 
-protocol ChatExternalDelegate {
-    func didWidgetTapped(withData: Widget?)
+public enum WidgetType {
+    case store
+    case dish
+}
+
+public protocol ChatBotDelegate {
+    func navigateFromBot(withData: ChatBotWidget?, forType: WidgetType?)
 }
 
 public class ChatViewModel: ObservableObject {
@@ -18,7 +23,7 @@ public class ChatViewModel: ObservableObject {
     
     private let apiService: ChatAPIService
     private var networkMiddleware: NetworkMiddleware
-    var delegate: ChatExternalDelegate?
+    var delegate: ChatBotDelegate?
     var myGptSessionData: MyGptsResponseModel?
     var sessionId: String
     private var sendMessageTask: Task<(), Never>?
@@ -32,7 +37,7 @@ public class ChatViewModel: ObservableObject {
     init(
         apiService: ChatAPIService,
         appConfig: AppConfigurationManager,
-        delegate: ChatExternalDelegate? = nil,
+        delegate: ChatBotDelegate? = nil,
         myGptSessionData: MyGptsResponseModel? = nil,
         sessionId: String = "\(Int(Date().timeIntervalSince1970))"
     ) {

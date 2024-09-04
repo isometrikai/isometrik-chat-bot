@@ -11,6 +11,8 @@ public class LaunchViewModel: ObservableObject {
     
     // MARK: - PROPERTIES
     
+    public var delegate: ChatBotDelegate
+    
     @Published var appConfigurations: AppConfigurationManager
     @Published var myGptSessionData: MyGptsResponseModel?
     
@@ -19,9 +21,10 @@ public class LaunchViewModel: ObservableObject {
     
     // MARK: - INITIALIZER
     
-    public init(appConfigurations: AppConfigurationManager){
+    public init(appConfigurations: AppConfigurationManager, delegate: ChatBotDelegate){
         self.appConfigurations = appConfigurations
         self.networkMiddleware = NetworkMiddleware(appConfig: appConfigurations)
+        self.delegate = delegate
     }
     
     // MARK: - METHODS
