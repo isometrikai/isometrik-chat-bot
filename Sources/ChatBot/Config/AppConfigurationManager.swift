@@ -9,25 +9,25 @@ import Foundation
 
 public class AppConfigurationManager {
     
+    public let chatBotId: String
     public let appTheme: AppTheme
     public let appSecret: String
     public let licenseKey: String
-    public let fingerprintId: String
     public let userId: String
     public let storeCategoryId: String
     
     public init(
-        appTheme: AppTheme = AppTheme(),
+        chatBotId: String,
+        userId: String,
         appSecret: String,
         licenseKey: String,
-        fingerprintId: String,
-        userId: String,
-        storeCategoryId: String
+        storeCategoryId: String,
+        appTheme: AppTheme = AppTheme()
     ) {
+        self.chatBotId = chatBotId
         self.appTheme = appTheme
         self.appSecret = appSecret
         self.licenseKey = licenseKey
-        self.fingerprintId = fingerprintId
         self.userId = userId
         self.storeCategoryId = storeCategoryId
     }

@@ -33,7 +33,7 @@ public class LaunchViewModel: ObservableObject {
         Task {
             do {
                 let parameters = MyGptsQueryParameter(
-                    id: "188"
+                    id: appConfigurations.chatBotId
                 )
                 
                 let data = try await networkMiddleware.performRequest {

@@ -19,6 +19,6 @@ public struct ThemeJsonFiles {
     public var botResponseLoaderBlack : String = loadJSONFileSafely(with: "bubble-wave-black")
     public var botResponseLoaderWhite : String = loadJSONFileSafely(with: "bubble-wave-white")
     
-    public init(){}
+    public init() {}
     
 }

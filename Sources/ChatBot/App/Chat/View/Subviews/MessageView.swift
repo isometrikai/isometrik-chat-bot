@@ -33,9 +33,9 @@ struct MessageView: View {
                     Spacer()
                     Text(message.text)
                         .padding(12)
-                        .background(Color(hex: "\(gptUIPreference?.userBubbleColor ?? "#2E8AFF")"))
+                        .background(Color(uiColor: UIColor(hex: "\(gptUIPreference?.userBubbleColor ?? "#2E8AFF")")))
                         .clipShape(RoundedCorner(topLeft: 8, topRight: 8, bottomLeft: 8, bottomRight: 0))
-                        .foregroundColor(Color(hex: "\(gptUIPreference?.userBubbleFontColor ?? "#FFFFFF")"))
+                        .foregroundColor(Color(uiColor: UIColor(hex: "\(gptUIPreference?.userBubbleFontColor ?? "#FFFFFF")")))
                         .font(.custom("\(gptUIPreference?.fontStyle ?? "")", size: 14))
                 } else {
                     appTheme.theme.images.appLogo
@@ -44,27 +44,24 @@ struct MessageView: View {
                         .frame(width: 40, height: 40)
                     
                     if message.isResponding {
-                        
                         ZStack(alignment: .bottomLeading) {
                             Rectangle()
-                                .fill(Color(hex: "\(gptUIPreference?.botBubbleColor ?? "#F6F6F6")"))
+                                .fill(Color(uiColor: UIColor(hex: "\(gptUIPreference?.botBubbleColor ?? "#F6F6F6")")))
                                 .frame(width: 100 ,height: 50)
                                 .clipShape(RoundedCorner(topLeft: 8, topRight: 8, bottomLeft: 0, bottomRight: 8))
-                            LottieView(filename: getLoaderFileName())
+                            LottieView(filePath: getLoaderFilePath())
                                 .scaledToFit()
                                 .frame(width: 100)
                                 .offset(x: 0)
                                 .scaleEffect(3)
                         }
                         .frame(height: 50)
-                        .background(Color.red.opacity(0.1))
-                        
                     } else {
                         Text(message.text)
                             .padding(12)
-                            .background(Color(hex: "\(gptUIPreference?.botBubbleColor ?? "#F6F6F6")"))
+                            .background(Color(uiColor: UIColor(hex: "\(gptUIPreference?.botBubbleColor ?? "#F6F6F6")")))
                             .clipShape(RoundedCorner(topLeft: 8, topRight: 8, bottomLeft: 0, bottomRight: 8))
-                            .foregroundColor(Color(hex: "\(gptUIPreference?.botBubbleFontColor ?? "#262626")"))
+                            .foregroundColor(Color(uiColor: UIColor(hex: "\(gptUIPreference?.botBubbleFontColor ?? "#262626")")))
                             .font(.custom("\(gptUIPreference?.fontStyle ?? "")", size: 14))
                     }
                     
@@ -97,7 +94,7 @@ struct MessageView: View {
     }//: BODY
     
     
-    func getLoaderFileName() -> String {
+    func getLoaderFilePath() -> String {
         
         let botBubbleColorHexString = gptUIPreference?.botBubbleColor ?? "#F6F6F6"
         let textStyle = textColorStyle(forHex: botBubbleColorHexString)

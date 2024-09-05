@@ -24,7 +24,7 @@ struct WelcomeView: View {
                 appTheme.theme.images.welcomeBot
                     .resizable()
                     .scaledToFit()
-                    .frame(width: 200)
+                    .frame(width: 150)
                     .offset(y: 35)
                     .clipped()
                 Text(myGptSessionData?.data?.first?.welcomeMessage?.first ?? "Welcome, what would you like to order today ?")

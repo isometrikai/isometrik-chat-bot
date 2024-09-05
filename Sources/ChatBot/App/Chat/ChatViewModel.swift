@@ -46,12 +46,7 @@ public class ChatViewModel: ObservableObject {
         self.delegate = delegate
         self.appConfigurations = appConfig
         self.networkMiddleware = NetworkMiddleware(appConfig: appConfig)
-        
-        // Hashing the sessionId to make it even more unique
-        let inputData = Data(sessionId.utf8)
-        let hashedSessionId = SHA256.hash(data: inputData)
-        self.sessionId = hashedSessionId.compactMap { String(format: "%02x", $0) }.joined()
-        
+        self.sessionId = ChatViewModel.getHashedSessionId(id: sessionId)
     }
     
     // MARK: - METHODS
@@ -62,7 +57,8 @@ public class ChatViewModel: ObservableObject {
         sendMessageTask?.cancel()
 
         // add the message to the list
-        messages.append(CustomMessageModel(text: message, isFromUser: true))
+        self.messages.append(CustomMessageModel(text: message, isFromUser: true))
+        
         
         sendMessageTask = Task {
             do {
@@ -133,4 +129,24 @@ public class ChatViewModel: ObservableObject {
         }
     }
     
+    func resetSession() {
+        // Clear messages
+        self.messages.removeAll()
+        
+        // Reset session-related properties
+        self.sessionId = ChatViewModel.getHashedSessionId(id: "\(Int(Date().timeIntervalSince1970))")
+
+        // Cancel any ongoing message sending tasks
+        sendMessageTask?.cancel()
+        sendMessageTask = nil
+        
+        // Reset typing status
+        self.isTyping = false
+    }
+    
+    private static func getHashedSessionId(id: String) -> String {
+        let inputData = Data(id.utf8)
+        let hashedSessionId = SHA256.hash(data: inputData)
+        return hashedSessionId.compactMap { String(format: "%02x", $0) }.joined()
+    }
 }

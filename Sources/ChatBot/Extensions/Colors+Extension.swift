@@ -9,7 +9,7 @@ import SwiftUI
 import UIKit
 
 extension Color {
-    init(hex: String) {
+    public init(hex: String) {
         let hex = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
         var int: UInt64 = 0
         Scanner(string: hex).scanHexInt64(&int)
@@ -33,6 +33,31 @@ extension Color {
             blue: Double(b) / 255,
             opacity: Double(a) / 255
         )
+    }
+}
+
+extension UIColor {
+    
+    // Initialize UIColor with hex
+    public convenience init(hex: String) {
+        let hex = hex.trimmingCharacters(in: .whitespacesAndNewlines)
+        let scanner = Scanner(string: hex)
+        if hex.hasPrefix("#") {
+            scanner.scanLocation = 1
+        }
+        
+        var color: UInt64 = 0
+        scanner.scanHexInt64(&color)
+        
+        let red = CGFloat((color >> 16) & 0xFF) / 255.0
+        let green = CGFloat((color >> 8) & 0xFF) / 255.0
+        let blue = CGFloat(color & 0xFF) / 255.0
+        self.init(red: red, green: green, blue: blue, alpha: 1.0)
+    }
+    
+    // Convert UIColor to Color
+    func toSwiftUIColor() -> Color {
+        return Color(self)
     }
 }
 

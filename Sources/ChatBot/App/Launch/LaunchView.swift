@@ -10,9 +10,8 @@ import SwiftUI
 public struct LaunchView: View {
     
     // MARK: - PROPERTIES
-    
+    @Environment(\.colorScheme) var colorScheme
     @StateObject public var viewModel: LaunchViewModel
-    
     @State private var scaleEffect: Bool = false
     @State private var isLoading: Bool = true
     @State private var showAlert: Bool = false
@@ -27,7 +26,10 @@ public struct LaunchView: View {
     
     public var body: some View {
         NavigationStack {
-            ZStack(alignment: .bottomTrailing){
+            ZStack(alignment: .center){
+                Rectangle()
+                    .fill(viewModel.appConfigurations.appTheme.theme.colors.primaryBackgroundColor(for: colorScheme))
+                    .edgesIgnoringSafeArea(.all)
                 VStack {
                     if isLoading {
                         LoaderView()
@@ -45,13 +47,23 @@ public struct LaunchView: View {
                     }
                 }
             }
-            .background(Color.white)
             .navigationBarHidden(true)
             .onAppear {
                 scaleEffect = true
             }
             .navigationDestination(isPresented: $navigateToChatView) {
-                ChatView(viewModel: ChatViewModel(apiService: ChatNetworkService(), appConfig: viewModel.appConfigurations, delegate: self, myGptSessionData: viewModel.myGptSessionData))
+                
+                let chatViewModel = ChatViewModel(
+                    apiService: ChatNetworkService(),
+                    appConfig: viewModel.appConfigurations,
+                    delegate: self,
+                    myGptSessionData: viewModel.myGptSessionData
+                )
+                
+                ChatView(viewModel: chatViewModel) {
+                    dismissHostingController()
+                }
+                
             }
         }
         .onAppear {
@@ -80,6 +92,14 @@ public struct LaunchView: View {
     func didWidgetTapped(withData: ChatBotWidget?) {
         guard let withData else { return }
         print("StoreId: \(withData.storeId ?? "")")
+    }
+    
+    func dismissHostingController() {
+        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+              let rootViewController = windowScene.windows.first?.rootViewController else {
+            return
+        }
+        rootViewController.dismiss(animated: true, completion: nil)
     }
 }
 

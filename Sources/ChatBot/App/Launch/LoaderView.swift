@@ -13,7 +13,6 @@ struct LoaderView: View {
             ProgressView()
             Text("Preparing your chat experience...")
                 .font(.headline)
-                .foregroundColor(.black)
         }
     }
 }

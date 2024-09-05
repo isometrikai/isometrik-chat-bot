@@ -11,22 +11,19 @@ import Combine
 struct ChatMessageScrollView: View {
     
     // MARK: - PROPERTIES
-    
+    @Environment(\.colorScheme) var colorScheme
     @ObservedObject var viewModel: ChatViewModel
     @Namespace var bottomId
     
     @State var showWelcomeView: Bool = false
-    @State private var scrollProxy: ScrollViewProxy?
     @FocusState.Binding var isFocused: Bool
     
     var suggestedReplyAction: ((String)->Void)?
     var widgetAction: ((ChatBotWidget?)->Void)?
     
-    
     // MARK: - BODY
     
     var body: some View {
-        
         ZStack {
             ScrollViewReader { proxy in
                 ScrollView {
@@ -38,8 +35,6 @@ struct ChatMessageScrollView: View {
                         ) { suggestedReply in
                             suggestedReplyAction?(suggestedReply)
                         }
-                        .transition(.push(from: .leading))
-                        .animation(.smooth, value: viewModel.messages)
                     }
                     VStack {
                         ForEach(viewModel.messages) { message in
@@ -57,32 +52,32 @@ struct ChatMessageScrollView: View {
                         Spacer().id(bottomId)
                     }
                 }
-                .background(Color.white)
                 .scrollIndicators(.hidden)
                 .modifier(ContentMarginsModifier())
-                .scrollToBottom(
-                    value: viewModel.messages.last?.text ?? "",
-                    isFocused: isFocused,
-                    bottomId: bottomId,
-                    proxy: $scrollProxy
-                )
                 .onTapGesture {
                     isFocused = false
                 }
                 .onAppear {
-                    scrollProxy = proxy
+                    scrollToBottom(proxy: proxy)
+                }
+                .onChange(of: viewModel.messages.last?.text) { _ in
+                    // Scroll to the bottom whenever the messages are updated
+                    scrollToBottom(proxy: proxy)
                 }
             }
         }//: ZSTACK
+        .background(viewModel.appConfigurations.appTheme.theme.colors.secondaryBackgroundColor(for: colorScheme))
         .onAppear {
-            // Delay the appearance of WelcomeView
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { // Adjust the delay as needed
-                withAnimation(.smooth) {
-                    showWelcomeView = true
-                }
-            }
+            showWelcomeView = true
         }
-        
+    }//: BODY
+    
+    // MARK: - FUNCTIONS
+    
+    func scrollToBottom(proxy: ScrollViewProxy) {
+        withAnimation {
+            proxy.scrollTo(bottomId, anchor: .bottom)
+        }
     }
     
 }

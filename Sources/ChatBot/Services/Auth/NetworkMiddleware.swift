@@ -45,10 +45,13 @@ final class NetworkMiddleware {
     private func handleUnauthorizedError() async -> Bool {
         do {
             
+            // decode userid if it's base64 encoded
+            let decodedUserId = decodeBase64(base64String: appConfig.userId) ?? "unknownUserId"
+            
             let bodyParameter = AccessTokenRequestParameters(
                 appSecret: appConfig.appSecret,
                 licensekey: appConfig.licenseKey,
-                fingerprintId: appConfig.fingerprintId
+                fingerprintId: decodedUserId
             )
             let data = try await apiService.getAccessToken(requestParameter: bodyParameter)
             
@@ -76,6 +79,15 @@ final class NetworkMiddleware {
             }
             throw error
         }
+    }
+    
+    // Helper function to decode Base64 string
+    private func decodeBase64(base64String: String) -> String? {
+        guard let data = Data(base64Encoded: base64String) else {
+            logError("Failed to decode Base64 string.")
+            return nil
+        }
+        return String(data: data, encoding: .utf8)
     }
     
 }

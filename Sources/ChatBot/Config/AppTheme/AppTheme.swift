@@ -12,12 +12,15 @@ public class AppTheme {
 public class Theme {
     public var images : ThemeImages
     public var jsonFiles: ThemeJsonFiles
+    public var colors: ThemeColors
     
     public init(
         images: ThemeImages = ThemeImages(),
-        jsonFiles: ThemeJsonFiles = ThemeJsonFiles()
+        jsonFiles: ThemeJsonFiles = ThemeJsonFiles(),
+        colors: ThemeColors = ThemeColors()
     ) {
         self.images = images
         self.jsonFiles = jsonFiles
+        self.colors = colors
     }
 }
