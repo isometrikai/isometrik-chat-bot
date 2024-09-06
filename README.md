@@ -51,7 +51,7 @@ self.present(hostingController, animated: true, completion: nil)
 ```
 
 ### Quick links
-- [how to handle delegates](./README_DOC/external_delegate.md) : ChatBot SDK provides you external delegate to handle action on the content that ChatBot suggests.
+- [how to handle delegates](./Readme_doc/external_delegate.md) : ChatBot SDK provides you external delegate to handle action on the content that ChatBot suggests.
 
 
 
