@@ -7,7 +7,7 @@
 
 # Isometrik ChatBot SDK
 
-
+Customer support chat bot, which can solve customers query related to products and their orders. Customer can ask about the order status and details. They can ask for best restaurants in respective area. 
 
 ## Setup
 
