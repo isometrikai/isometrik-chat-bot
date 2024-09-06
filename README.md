@@ -13,30 +13,21 @@ This is the official Livestream SDK for integrating advanced streaming capabilit
 
 1. Get your Ids and keys ready
    
-For SDK to work you need to make sure you have these configurations ready before you move to initializing your SDK, ``chatBotId``, ``userId``, ``licensekey`` , ``appSecret`` , ``storeCategoryId``
+For SDK to work you need to make sure you have these keys ready
+``chatBotId``, ``userId``, ``licensekey`` , ``appSecret`` , ``storeCategoryId``
 
 2. Initialize your SDK
 
-call ``createConfiguration`` method for initialization
+you need to create a object of ``AppConfigurationManager`` as show below
 
 ```swift
 
-let streamUser = ISMStreamUser(
-    userId: userId,
-    name: name,
-    identifier: identifier,
-    imagePath: imagePath,
-    userToken: userToken
-)
+ let appConfig = AppConfigurationManager(
+      chatBotId: "YOUR CHAT BOT ID",
+      userId: "YOUR USER ID",
+      appSecret: "YOUR APP SECRET ID",
+      licenseKey: "YOUR LICENSE KEY",
+      storeCategoryId: "YOUR STORE CATEGORY ID"
+  )
 
-IsometrikSDK.getInstance().createConfiguration(
-    accountId: "YOUR ACCOUNT ID",
-    projectId: "YOUR PROJECT ID",
-    keysetId: "YOUR KEYSET ID",
-    licenseKey: "YOUR LICENSE KEY",
-    appSecret: "YOUR APP SECRET",
-    userSecret: "YOUR USER SECRET",
-    rtcAppId: "YOUR RTCAPP ID",
-    userInfo: streamUser
-)
 ```
