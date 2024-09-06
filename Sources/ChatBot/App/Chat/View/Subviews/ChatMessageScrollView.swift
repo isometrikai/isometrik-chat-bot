@@ -29,11 +29,14 @@ struct ChatMessageScrollView: View {
                 ScrollView {
                     if viewModel.myGptSessionData != nil, showWelcomeView {
                         WelcomeView(
+                            chatBotName: viewModel.appConfigurations.chatBotName,
                             appTheme: viewModel.appConfigurations.appTheme,
                             myGptSessionData: viewModel.myGptSessionData,
-                            uiPreference: viewModel.myGptSessionData?.data?.first?.uiPreferences
+                            uiPreference: viewModel.myGptSessionData?.data?.first?.uiPreferences,
+                            hideSuggestedReplies: $viewModel.hideSuggestedReplies
                         ) { suggestedReply in
                             suggestedReplyAction?(suggestedReply)
+                            viewModel.hideSuggestedReplies = true
                         }
                     }
                     VStack {
@@ -63,6 +66,7 @@ struct ChatMessageScrollView: View {
                 .onChange(of: viewModel.messages.last?.text) { _ in
                     // Scroll to the bottom whenever the messages are updated
                     scrollToBottom(proxy: proxy)
+                    viewModel.hideSuggestedReplies = viewModel.messages.isEmpty ? false : true
                 }
             }
         }//: ZSTACK

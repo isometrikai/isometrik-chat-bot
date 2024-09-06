@@ -10,10 +10,13 @@ import SwiftUI
 struct WelcomeView: View {
     
     // MARK: - PROPERTIES
+    var chatBotName: String
     var appTheme: AppTheme
     var myGptSessionData: MyGptsResponseModel?
     var uiPreference: MyGptUIPreferences?
+    @Binding var hideSuggestedReplies: Bool
     var repliedWith: (String) -> Void
+    
    
     
     // MARK: - BODY
@@ -28,7 +31,7 @@ struct WelcomeView: View {
                     .offset(y: 35)
                     .clipped()
                 VStack(alignment: .leading) {
-                    Text("Meet EazyButler")
+                    Text("Meet \(chatBotName)")
                         .foregroundColor(.white)
                         .font(.system(size: 16, weight: .bold))
                     Text(myGptSessionData?.data?.first?.welcomeMessage?.first ?? "Welcome, what would you like to order today ?")
@@ -45,10 +48,11 @@ struct WelcomeView: View {
                     .clipShape(RoundedCorner(topLeft: 8, topRight: 8, bottomLeft: 0, bottomRight: 8))
                 )
                 
-                SuggestedRepliesView(replies: myGptSessionData?.data?.first?.suggestedReplies ?? [], uiPreference: uiPreference) { reply in
-                    repliedWith(reply)
+                if !hideSuggestedReplies {
+                    SuggestedRepliesView(replies: myGptSessionData?.data?.first?.suggestedReplies ?? [], uiPreference: uiPreference) { reply in
+                        repliedWith(reply)
+                    }
                 }
-                
             }
             Spacer()
         }

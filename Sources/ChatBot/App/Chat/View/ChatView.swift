@@ -34,13 +34,16 @@ struct ChatView: View {
             CustomNavView(
                 isLeadingActionEnabled: .constant(true), 
                 isTrailingActionEnabled: isTrailingActionEnabled,
+                chatBotName: viewModel.appConfigurations.chatBotName,
                 appTheme: viewModel.appConfigurations.appTheme,
                 leadingButtonAction: {
+                    HapticFeedbackManager.shared.triggerSelection()
                     dismiss_callback?()
                     dismiss()
                 },
                 trailingButtonAction: {
                     showAlertForResetingSession = true
+                    HapticFeedbackManager.shared.triggerNotification(type: .warning)
                 }
             )
             ChatMessageScrollView(
@@ -48,9 +51,11 @@ struct ChatView: View {
                 isFocused: $isFocused,
                 suggestedReplyAction: { replyMessage  in
                     sendMessage(message: replyMessage)
+                    HapticFeedbackManager.shared.triggerSelection()
                 },
                 widgetAction: { widget in
                     viewModel.delegate?.navigateFromBot(withData: widget, forType: .store)
+                    HapticFeedbackManager.shared.triggerSelection()
                 }
             )
             MessageToolBarView(
@@ -59,9 +64,11 @@ struct ChatView: View {
                 appTheme: viewModel.appConfigurations.appTheme,
                 sendAction: { message in
                     sendMessage(message: message)
+                    HapticFeedbackManager.shared.triggerSelection()
                 },
                 cancelAction: {
                     viewModel.cancelSendMessage()
+                    HapticFeedbackManager.shared.triggerNotification(type: .error)
                 }
             )
         }//: VSTACK
@@ -69,13 +76,13 @@ struct ChatView: View {
         .onAppear {
             isFocused = true
         }
-        .alert("Are you sure want a reset?", isPresented: $showAlertForResetingSession) {
-            Button("Reset", role: .destructive) {
+        .alert("Are you sure want to start new chat?", isPresented: $showAlertForResetingSession) {
+            Button("Yes", role: .destructive) {
                 viewModel.resetSession()
             }
             Button("Cancel", role: .cancel){}
         } message: {
-            Text("This will reset your conversation which cannot be recovered later.")
+            Text("")
         }
     }
     

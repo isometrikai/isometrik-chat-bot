@@ -17,6 +17,7 @@ public protocol ChatBotDelegate {
     func navigateFromBot(withData: ChatBotWidget?, forType: WidgetType?)
 }
 
+@MainActor
 public class ChatViewModel: ObservableObject {
     
     // MARK: - PROPERTIES
@@ -31,6 +32,7 @@ public class ChatViewModel: ObservableObject {
     @Published var messages: [CustomMessageModel] = []
     @Published var isTyping: Bool = false
     @Published var appConfigurations: AppConfigurationManager
+    @Published var hideSuggestedReplies: Bool = false
     
     // MARK: - INITIALIZER
     
@@ -75,6 +77,7 @@ public class ChatViewModel: ObservableObject {
                 }
                 
                 if !Task.isCancelled {
+                    HapticFeedbackManager.shared.triggerNotification(type: .success)
                     DispatchQueue.main.async {
                         let lastMessageIndex = self.messages.count - 1
                         self.messages[lastMessageIndex].text = data.text ?? ""
@@ -142,6 +145,9 @@ public class ChatViewModel: ObservableObject {
         
         // Reset typing status
         self.isTyping = false
+        
+        // reset the suggestion hidden status
+        self.hideSuggestedReplies = false
     }
     
     private static func getHashedSessionId(id: String) -> String {

@@ -12,6 +12,7 @@ struct CustomNavView: View {
     @Environment(\.colorScheme) var colorScheme
     @Binding var isLeadingActionEnabled: Bool
     @Binding var isTrailingActionEnabled: Bool
+    var chatBotName: String
     var appTheme: AppTheme
     var leadingButtonAction: (() -> Void)?
     var trailingButtonAction: (() -> Void)?
@@ -53,7 +54,7 @@ struct CustomNavView: View {
                                 .scaledToFill()
                                 .frame(width: 45, height: 45)
                             VStack(alignment: .leading) {
-                                Text("EazyBee")
+                                Text(chatBotName)
                                     .font(.system(size: 20, weight: .bold))
                                 Text("AI Assistant")
                                     .font(.system(size: 12))

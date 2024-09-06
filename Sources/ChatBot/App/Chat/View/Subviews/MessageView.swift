@@ -11,6 +11,7 @@ struct MessageView: View {
     
     // MARK: - PROPERTIES
     
+    @Environment(\.colorScheme) var colorScheme
     var appTheme: AppTheme
     var message: CustomMessageModel
     var gptUIPreference: MyGptUIPreferences?
@@ -46,7 +47,7 @@ struct MessageView: View {
                     if message.isResponding {
                         ZStack(alignment: .bottomLeading) {
                             Rectangle()
-                                .fill(Color(uiColor: UIColor(hex: "\(gptUIPreference?.botBubbleColor ?? "#F6F6F6")")))
+                                .fill(colorScheme == .dark ? appTheme.theme.colors.primaryBackgroundColorDarkMode : Color(uiColor: UIColor(hex: "\(gptUIPreference?.botBubbleColor ?? "#F6F6F6")")))
                                 .frame(width: 100 ,height: 50)
                                 .clipShape(RoundedCorner(topLeft: 8, topRight: 8, bottomLeft: 0, bottomRight: 8))
                             LottieView(filePath: getLoaderFilePath())
@@ -56,13 +57,21 @@ struct MessageView: View {
                                 .scaleEffect(3)
                         }
                         .frame(height: 50)
+                        .overlay {
+                            RoundedCorner(topLeft: 8, topRight: 8, bottomLeft: 0, bottomRight: 8)
+                                .stroke(Color.gray.opacity(0.2), lineWidth: 1)
+                        }
                     } else {
                         Text(message.text)
                             .padding(12)
-                            .background(Color(uiColor: UIColor(hex: "\(gptUIPreference?.botBubbleColor ?? "#F6F6F6")")))
+                            .background(colorScheme == .dark ? appTheme.theme.colors.primaryBackgroundColorDarkMode : Color(uiColor: UIColor(hex: "\(gptUIPreference?.botBubbleColor ?? "#F6F6F6")")))
                             .clipShape(RoundedCorner(topLeft: 8, topRight: 8, bottomLeft: 0, bottomRight: 8))
-                            .foregroundColor(Color(uiColor: UIColor(hex: "\(gptUIPreference?.botBubbleFontColor ?? "#262626")")))
+                            .foregroundColor(colorScheme == .dark ? Color.white : Color(uiColor: UIColor(hex: "\(gptUIPreference?.botBubbleFontColor ?? "#262626")")))
                             .font(.custom("\(gptUIPreference?.fontStyle ?? "")", size: 14))
+                            .overlay {
+                                RoundedCorner(topLeft: 8, topRight: 8, bottomLeft: 0, bottomRight: 8)
+                                    .stroke(Color.gray.opacity(0.2), lineWidth: 1)
+                            }
                     }
                     
                     Spacer()
@@ -97,10 +106,7 @@ struct MessageView: View {
     
     func getLoaderFilePath() -> String {
         
-        let botBubbleColorHexString = gptUIPreference?.botBubbleColor ?? "#F6F6F6"
-        let textStyle = textColorStyle(forHex: botBubbleColorHexString)
-        
-        if textStyle == "dark" {
+        if colorScheme == .light {
             return appTheme.theme.jsonFiles.botResponseLoaderBlack
         } else {
             return appTheme.theme.jsonFiles.botResponseLoaderWhite

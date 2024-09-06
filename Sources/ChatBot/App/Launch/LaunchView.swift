@@ -71,14 +71,16 @@ public struct LaunchView: View {
                 do {
                     isLoading = true
                     try await viewModel.getMyGptsContent()
-                    try await Task.sleep(nanoseconds: 4_000_000_000) // 4 second delay intentionally added
+                    try await Task.sleep(nanoseconds: 4_000_000_000) // 1 second delay intentionally added
                     isLoading = false
                     navigateToChatView = true // Trigger navigation
+                    HapticFeedbackManager.shared.triggerNotification(type: .success)
                 } catch {
                     // Handle the error here
                     isLoading = false
                     alertMessage = "Failed to get content: \(error.localizedDescription)"
                     showAlert = true
+                    HapticFeedbackManager.shared.triggerNotification(type: .error)
                 }
             }
         }
