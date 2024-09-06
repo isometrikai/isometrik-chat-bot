@@ -18,7 +18,7 @@ For SDK to work you need to make sure you have these keys ready
 
 2. Initialize your SDK
 
-you need to create a object of ``AppConfigurationManager`` as show below
+- You need to create a object of ``AppConfigurationManager`` as show below
 
 ```swift
 
@@ -31,3 +31,24 @@ you need to create a object of ``AppConfigurationManager`` as show below
   )
 
 ```
+
+- Now you have to pass this object to ``LaunchViewModel`` and further pass the viewModel to the ``LaunchView``
+
+``` swift
+
+let launchViewModel = LaunchViewModel(appConfigurations: appConfig)
+let launchView = LaunchView(viewModel: launchViewModel)
+
+```
+- Now navigation using ``UIHostingViewController`` to chatBot as shown below
+
+``` swift
+
+let hostingController = UIHostingController(rootView: launchView)
+hostingController.modalPresentationStyle = .fullScreen
+self.present(hostingController, animated: true, completion: nil)
+
+```
+
+## Handling delegates
+
