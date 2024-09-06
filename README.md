@@ -60,31 +60,31 @@ self.present(hostingController, animated: true, completion: nil)
 <table>
 <tr>
 <td>
-<p>Welcome View - Light</p>
+<p>Welcome View - Light Mode</p>
 <img src="./Readme_doc/images/welcome_light.PNG" width="300" />
 </td>
 <td>
-<p>Welcome View - Dark</p>
+<p>Welcome View - Dark Mode</p>
 <img src="./Readme_doc/images/welcome_dark.PNG" width="300" />
 </td>
 </tr>
 <tr>
 <td>
-<p>Store/Restaurant Suggestions - Light</p>
+<p>Store/Restaurant Suggestions - Light Mode</p>
 <img src="./Readme_doc/images/store_light.PNG" width="300" />
 </td>
 <td>
-<p>Store/Restaurant Suggestions - Black</p>
+<p>Store/Restaurant Suggestions - Dark Mode</p>
 <img src="./Readme_doc/images/store_dark.PNG" width="300" />
 </td>
 </tr>
   <tr>
 <td>
-<p>Dish Suggestions - Light</p>
+<p>Dish Suggestions - Light Mode</p>
 <img src="./Readme_doc/images/dish_light.PNG" width="300" />
 </td>
 <td>
-<p>Dish Suggestions - Black</p>
+<p>Dish Suggestions - Dark Mode</p>
 <img src="./Readme_doc/images/dish_dark.PNG" width="300" />
 </td>
 </tr>
