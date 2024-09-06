@@ -1,17 +1,14 @@
-### Handling ChatBot SDK delegates
+### Handling ChatBot SDK Delegates
 
-ChatBotSDK provides a delegate to handle actions for the responses it provide for either store or dish, which requires conforming to the `ChatBotDelegate` protocol. An example implementation is provided below:
+The ChatBot SDK provides a delegate to handle actions from its responses, such as store or dish suggestions. To utilize this functionality, you must conform to the `ChatBotDelegate` protocol. Below is an example of how to implement the delegate:
 
-``` swift
-
+```swift
 extension ViewController: ChatBotDelegate {
     
     func navigateFromBot(withData: ChatBotWidget?, forType: WidgetType?) {
-        // add your controller to handle the action using given data
+        // Implement your custom logic to handle the navigation using the provided data
     }
-    
 }
-
 ```
 
-- [DemoViewController](./DemoViewController.swift) : check complete code example here how to handle delegate
+For a complete implementation example, check out the [DemoViewController](./DemoViewController.swift).
