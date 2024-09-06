@@ -14,3 +14,4 @@ extension ViewController: ChatBotDelegate {
 
 ```
 
+- [DemoViewController](./Readme_doc/external_delegate.md) : check complete code example here how to handle delegate
