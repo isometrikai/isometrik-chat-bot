@@ -55,4 +55,39 @@ self.present(hostingController, animated: true, completion: nil)
 - [How to handle delegates](./Readme_doc/external_delegate.md) : Learn how to use the external delegate to manage actions suggested by the ChatBot.
 
 
+### APP Preview
+
+<table>
+<tr>
+<td>
+<p>Welcome View - Light</p>
+<img src="./Readme_doc/images/welcome_light.PNG" width="300" />
+</td>
+<td>
+<p>Welcome View - Dark</p>
+<img src="./Readme_doc/images/welcome_dark.PNG" width="300" />
+</td>
+</tr>
+<tr>
+<td>
+<p>Store/Restaurant Suggestions - Light</p>
+<img src="./Readme_doc/images/store_light.PNG" width="300" />
+</td>
+<td>
+<p>Store/Restaurant Suggestions - Black</p>
+<img src="./Readme_doc/images/store_dark.PNG" width="300" />
+</td>
+</tr>
+  <tr>
+<td>
+<p>Dish Suggestions - Light</p>
+<img src="./Readme_doc/images/dish_light.PNG" width="300" />
+</td>
+<td>
+<p>Dish Suggestions - Black</p>
+<img src="./Readme_doc/images/dish_dark.PNG" width="300" />
+</td>
+</tr>
+</table>
+
 
