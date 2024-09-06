@@ -46,13 +46,13 @@ class DemoViewController: UIViewController {
     @objc func launchButtonTapped(){
         
         let appConfig = AppConfigurationManager(
-            chatBotId: "",
-            userId: "",
-            appSecret: "",
-            licenseKey: "",
-            storeCategoryId: ""
+            chatBotId: "YOUR CHAT BOT ID",
+            userId: "YOUR USER ID",
+            appSecret: "YOUR APP SECRET ID",
+            licenseKey: "YOUR LICENSE KEY",
+            storeCategoryId: "YOUR STORE CATEGORY ID"
         )
-        
+
         let launchViewModel = LaunchViewModel(appConfigurations: appConfig, delegate: self)
         let launchView = LaunchView(viewModel: launchViewModel)
         
