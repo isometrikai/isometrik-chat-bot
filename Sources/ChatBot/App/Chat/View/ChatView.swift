@@ -50,7 +50,7 @@ struct ChatView: View {
                     sendMessage(message: replyMessage)
                 },
                 widgetAction: { widget in
-                    viewModel.delegate?.navigateFromBot(withData: widget, forType: .dish)
+                    viewModel.delegate?.navigateFromBot(withData: widget, forType: .store)
                 }
             )
             MessageToolBarView(

@@ -79,7 +79,8 @@ struct MessageView: View {
                         ForEach((message.messageData?.widgetData?.first?.widget ?? [])!, id: \.self) { widget in
                             WidgetView(
                                 appTheme: appTheme,
-                                widgetData: widget
+                                widgetData: widget,
+                                gptUIPreference: gptUIPreference
                             ) { widget in
                                 widgetAction?(widget)
                             }

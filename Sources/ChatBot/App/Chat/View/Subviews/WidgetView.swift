@@ -10,47 +10,69 @@ import SwiftUI
 struct WidgetView: View {
     
     // MARK: - PROPERTIES
+    @Environment(\.colorScheme) var colorScheme
     var appTheme: AppTheme
     var widgetData: ChatBotWidget?
+    var gptUIPreference: MyGptUIPreferences?
     var widgetTappedAction: ((ChatBotWidget?) -> Void)?
     
     // MARK: - BODY
     
     var body: some View {
-        Button {
-            widgetTappedAction?(widgetData)
-        } label: {
-            VStack(alignment: .leading, spacing: 0) {
-                ZStack(alignment: .bottomTrailing) {
+        VStack(alignment: .leading, spacing: 0) {
+            ZStack(alignment: .bottomTrailing) {
+                ZStack(alignment: .center) {
+                    Rectangle()
+                        .fill(Color.gray.opacity(0.2))
                     URLImageView(url: URL(string: widgetData?.imageURL ?? "")!)
-                        .scaledToFill()
-                        .frame(height: 120)
+                        .scaledToFit()
                         .clipped()
-                    
-                    getSupportedOrderTypeViews(orderType: widgetData?.supportedOrderTypes ?? 0)
                 }
-                VStack(alignment: .leading) {
-                    Text(widgetData?.title ?? "")
-                        .font(.system(size: 14))
-                    Text(widgetData?.subtitle ?? "")
-                        .font(.system(size: 12))
-                        .foregroundColor(Color(hex: "#94A0AF"))
-                    Text(getDescriptionText())
-                        .font(.system(size: 14))
-                        .padding(EdgeInsets(top: 12, leading: 0, bottom: 0, trailing: 0))
-                }
-                .padding(.horizontal, 8)
-                .padding(.vertical, 8)
+                getSupportedOrderTypeViews(orderType: widgetData?.supportedOrderTypes ?? 0)
             }
-            .frame(width: 250)
-            .background(Color(hex: "#F6F6F6"))
-            .cornerRadius(6)
-            .overlay(
-                RoundedRectangle(cornerRadius: 6)
-                    .stroke(Color(hex: "#F6F6F6"), lineWidth: 2)
-            )
+            .frame(width: 250, height: 120)
+            VStack(alignment: .leading) {
+                Text(widgetData?.title ?? "")
+                    .font(.system(size: 14))
+                    .multilineTextAlignment(.leading)
+                    .lineLimit(2)
+                Text(widgetData?.subtitle ?? "")
+                    .font(.system(size: 12))
+                    .foregroundColor(Color(uiColor: UIColor(hex: "#94A0AF")))
+                Text(getDescriptionText())
+                    .font(.system(size: 14))
+                    .padding(EdgeInsets(top: 12, leading: 0, bottom: 0, trailing: 0))
+                if widgetData?.buttontext != nil {
+                    Button {
+                        widgetTappedAction?(widgetData)
+                    } label: {
+                        HStack {
+                            Spacer()
+                            Text(widgetData?.buttontext ?? "")
+                                .font(.system(size: 14))
+                                .foregroundColor(Color(uiColor: UIColor(hex: gptUIPreference?.primaryColor ?? "")))
+                            Spacer()
+                        }
+                        .padding(.vertical, 10)
+                        .padding(.horizontal, 16)
+                        .overlay {
+                            getButtonOverlay()
+                        }
+                        .padding(.top, 8)
+                    }
+                    .buttonStyle(AnimatedButtonStyle())
+                }
+            }
+            .padding(.horizontal, 8)
+            .padding(.vertical, 8)
         }
-        .buttonStyle(AnimatedButtonStyle())
+        .frame(width: 250)
+        .background(appTheme.theme.colors.primaryBackgroundColor(for: colorScheme))
+        .cornerRadius(6)
+        .overlay(
+            RoundedRectangle(cornerRadius: 6)
+                .stroke(Color.gray.opacity(0.2), lineWidth: 1)
+        )
     }
     
     
@@ -113,6 +135,19 @@ struct WidgetView: View {
             return AnyView(Circle().fill(.clear).frame(width: .zero, height: .zero))
         }
         
+    }
+    
+    func getButtonOverlay() -> some View {
+        Group {
+            if #available(iOS 17.0, *) {
+                RoundedRectangle(cornerRadius: 25)
+                    .stroke(Color(uiColor: UIColor(hex: gptUIPreference?.primaryColor ?? "")), lineWidth: 1)
+                    .background(Color.clear)
+            } else {
+                RoundedRectangle(cornerRadius: 25.0)
+                    .stroke(Color(uiColor: UIColor(hex: gptUIPreference?.primaryColor ?? "")), lineWidth: 1)
+            }
+        }
     }
     
 }

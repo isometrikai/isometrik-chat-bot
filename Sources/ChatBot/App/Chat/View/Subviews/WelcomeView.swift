@@ -27,19 +27,23 @@ struct WelcomeView: View {
                     .frame(width: 150)
                     .offset(y: 35)
                     .clipped()
-                Text(myGptSessionData?.data?.first?.welcomeMessage?.first ?? "Welcome, what would you like to order today ?")
-                    .padding(12)
-                    .background(
-                        LinearGradient(
-                            gradient: Gradient(colors: [Color(hex: "#2E8AFF"), Color(hex: "#93EDAB")]),
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                        .clipShape(RoundedCorner(topLeft: 8, topRight: 8, bottomLeft: 0, bottomRight: 8))
+                VStack(alignment: .leading) {
+                    Text("Meet EazyButler")
+                        .foregroundColor(.white)
+                        .font(.system(size: 16, weight: .bold))
+                    Text(myGptSessionData?.data?.first?.welcomeMessage?.first ?? "Welcome, what would you like to order today ?")
+                        .foregroundColor(.white)
+                        .font(.system(size: 14))
+                }
+                .padding(12)
+                .background(
+                    LinearGradient(
+                        gradient: Gradient(colors: [Color(hex: "#2E8AFF"), Color(hex: "#93EDAB")]),
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
                     )
-                    .foregroundColor(.white)
-                    .font(.system(size: 14))
-                
+                    .clipShape(RoundedCorner(topLeft: 8, topRight: 8, bottomLeft: 0, bottomRight: 8))
+                )
                 
                 SuggestedRepliesView(replies: myGptSessionData?.data?.first?.suggestedReplies ?? [], uiPreference: uiPreference) { reply in
                     repliedWith(reply)
