@@ -16,9 +16,12 @@ struct ChatView: View {
     // MARK: - PROPERTIES
     @Environment(\.dismiss) var dismiss
     @StateObject var viewModel: ChatViewModel
-    @State private var showAlertForResetingSession: Bool = false
+    
     @FocusState var isFocused: Bool
     var dismiss_callback: (()->Void)?
+    
+    @State private var showDismissPopup = false
+    @State private var showAlertForResetingSession: Bool = false
     
     private var isTrailingActionEnabled: Binding<Bool> {
         Binding(
@@ -36,59 +39,99 @@ struct ChatView: View {
                 isTrailingActionEnabled: isTrailingActionEnabled,
                 chatBotName: viewModel.appConfigurations.chatBotName,
                 appTheme: viewModel.appConfigurations.appTheme,
-                leadingButtonAction: {
-                    HapticFeedbackManager.shared.triggerSelection()
-                    dismiss_callback?()
-                    dismiss()
-                },
-                trailingButtonAction: {
-                    showAlertForResetingSession = true
-                    HapticFeedbackManager.shared.triggerNotification(type: .warning)
-                }
+                leadingButtonAction: handleLeadingAction,
+                trailingButtonAction: handleTrailingAction
             )
             ChatMessageScrollView(
                 viewModel: viewModel,
                 isFocused: $isFocused,
-                suggestedReplyAction: { replyMessage  in
-                    sendMessage(message: replyMessage)
-                    HapticFeedbackManager.shared.triggerSelection()
-                },
-                widgetAction: { widget in
-                    viewModel.delegate?.navigateFromBot(withData: widget, forType: .store)
-                    HapticFeedbackManager.shared.triggerSelection()
-                }
+                suggestedReplyAction: sendMessage,
+                widgetAction: handleWidgetAction
             )
             MessageToolBarView(
                 isFocused: $isFocused,
                 isBotTyping: $viewModel.isTyping,
                 appTheme: viewModel.appConfigurations.appTheme,
-                sendAction: { message in
-                    sendMessage(message: message)
-                    HapticFeedbackManager.shared.triggerSelection()
-                },
-                cancelAction: {
-                    viewModel.cancelSendMessage()
-                    HapticFeedbackManager.shared.triggerNotification(type: .error)
-                }
+                sendAction: sendMessage,
+                cancelAction: cancelSendMessage
             )
         }//: VSTACK
         .navigationBarHidden(true)
         .onAppear {
             isFocused = true
         }
-        .alert("Are you sure want to start new chat?", isPresented: $showAlertForResetingSession) {
-            Button("Yes", role: .destructive) {
-                viewModel.resetSession()
+        .onChange(of: showDismissPopup) { newValue in
+            if newValue {
+                PopupManager.shared.showPopup(
+                    title: "Exit Chat",
+                    message: "You will lose your current chat context. Are you sure you want to exit?",
+                    animationType: .slideInBottom,
+                    actions: [
+                        PopupAction(title: "cancel".uppercased(), buttonType: .cancel , handler: {
+                            showDismissPopup = false
+                        }),
+                        PopupAction(title: "exit chat".uppercased(), buttonType: .destructive , handler: {
+                            dismiss_callback?()
+                            dismiss()
+                        })
+                    ]
+                )
             }
-            Button("Cancel", role: .cancel){}
-        } message: {
-            Text("")
+        }
+        .onChange(of: showAlertForResetingSession) { newValue in
+            if newValue {
+                PopupManager.shared.showPopup(
+                    title: "Are you sure want to start new chat?",
+                    message: "",
+                    animationType: .slideInBottom,
+                    actions: [
+                        PopupAction(title: "cancel".uppercased(), buttonType: .cancel , handler: {
+                            showAlertForResetingSession = false
+                        }),
+                        PopupAction(title: "yes".uppercased(), buttonType: ._default , handler: {
+                            viewModel.resetSession()
+                        })
+                    ]
+                )
+            }
         }
     }
     
     // MARK: - FUNTION
     
-    func sendMessage(message: String) {
+    private func handleLeadingAction() {
+        HapticFeedbackManager.shared.triggerSelection()
+        if !viewModel.messages.isEmpty {
+            isFocused = false
+            showDismissPopup = true
+        } else {
+            dismiss_callback?()
+            dismiss()
+        }
+    }
+    
+    private func handleTrailingAction() {
+        HapticFeedbackManager.shared.triggerNotification(type: .warning)
+        isFocused = false
+        showAlertForResetingSession = true
+    }
+    
+    private func sendMessage(message: String) {
+        self.sendMessageWithBotChanges(message: message)
+        HapticFeedbackManager.shared.triggerSelection()
+    }
+    
+    private func cancelSendMessage() {
+        viewModel.cancelSendMessage()
+        HapticFeedbackManager.shared.triggerNotification(type: .error)
+    }
+    
+    private func handleWidgetAction(widget: ChatBotWidget?) {
+        viewModel.delegate?.navigateFromBot(withData: widget, forType: .store)
+        HapticFeedbackManager.shared.triggerSelection()
+    }
+    
+    func sendMessageWithBotChanges(message: String) {
         if !message.isEmpty {
             
             DispatchQueue.main.asyncAfter(deadline: .now()) {

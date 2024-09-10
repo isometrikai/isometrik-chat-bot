@@ -3,7 +3,6 @@ import Foundation
 public struct ThemeJsonFiles {
     
     private static func loadJSONFileSafely(with fileName: String) -> String {
-    
         if let path = Bundle.chatBotBundle.path(forResource: fileName, ofType: "json") {
             return path
         } else {
