@@ -61,6 +61,7 @@ struct WidgetView: View {
                         .padding(.top, 8)
                     }
                     .buttonStyle(AnimatedButtonStyle())
+                    .contentShape(Rectangle()) // This increases the tappable area to the size of the button content
                 }
             }
             .padding(.horizontal, 8)
