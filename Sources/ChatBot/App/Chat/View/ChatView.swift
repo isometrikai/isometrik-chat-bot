@@ -127,7 +127,10 @@ struct ChatView: View {
     }
     
     private func handleWidgetAction(widget: ChatBotWidget?) {
-        viewModel.delegate?.navigateFromBot(withData: widget, forType: .store)
+        viewModel.delegate?.navigateFromBot(withData: widget, forType: .store, dismissOnSuccess: { success in
+            dismiss_callback?()
+            dismiss()
+        })
         HapticFeedbackManager.shared.triggerSelection()
     }
     

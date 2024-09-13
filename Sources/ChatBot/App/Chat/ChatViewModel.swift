@@ -14,7 +14,7 @@ public enum WidgetType {
 }
 
 public protocol ChatBotDelegate {
-    func navigateFromBot(withData: ChatBotWidget?, forType: WidgetType?)
+    func navigateFromBot(withData: ChatBotWidget?, forType: WidgetType?, dismissOnSuccess: (Bool)->())
 }
 
 @MainActor
