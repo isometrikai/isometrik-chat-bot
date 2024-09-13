@@ -108,7 +108,7 @@ public struct LaunchView: View {
 
 extension LaunchView: ChatBotDelegate {
     
-    public func navigateFromBot(withData: ChatBotWidget?, forType: WidgetType?, dismissOnSuccess: (Bool)->()) {
+    public func navigateFromBot(withData: ChatBotWidget?, forType: WidgetType?, dismissOnSuccess: @escaping (Bool)->()) {
         viewModel.delegate.navigateFromBot(withData: withData, forType: forType, dismissOnSuccess: dismissOnSuccess)
     }
     
