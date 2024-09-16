@@ -47,7 +47,8 @@ struct MessageView: View {
                     if message.isResponding {
                         ZStack(alignment: .bottomLeading) {
                             Rectangle()
-                                .fill(colorScheme == .dark ? appTheme.theme.colors.primaryBackgroundColorDarkMode : Color(uiColor: UIColor(hex: "\(gptUIPreference?.botBubbleColor ?? "#F6F6F6")")))
+                                //.fill(colorScheme == .dark ? appTheme.theme.colors.primaryBackgroundColorDarkMode : Color(uiColor: UIColor(hex: "\(gptUIPreference?.botBubbleColor ?? "#F6F6F6")")))
+                                .fill(Color(uiColor: UIColor(hex: "\(gptUIPreference?.botBubbleColor ?? "#F6F6F6")")))
                                 .frame(width: 100 ,height: 50)
                                 .clipShape(RoundedCorner(topLeft: 8, topRight: 8, bottomLeft: 0, bottomRight: 8))
                             LottieView(filePath: getLoaderFilePath())
@@ -64,9 +65,11 @@ struct MessageView: View {
                     } else {
                         Text(message.text)
                             .padding(12)
-                            .background(colorScheme == .dark ? appTheme.theme.colors.primaryBackgroundColorDarkMode : Color(uiColor: UIColor(hex: "\(gptUIPreference?.botBubbleColor ?? "#F6F6F6")")))
+//                            .background(colorScheme == .dark ? appTheme.theme.colors.primaryBackgroundColorDarkMode : Color(uiColor: UIColor(hex: "\(gptUIPreference?.botBubbleColor ?? "#F6F6F6")")))
+                            .background(Color(uiColor: UIColor(hex: "\(gptUIPreference?.botBubbleColor ?? "#F6F6F6")")))
                             .clipShape(RoundedCorner(topLeft: 8, topRight: 8, bottomLeft: 0, bottomRight: 8))
-                            .foregroundColor(colorScheme == .dark ? Color.white : Color(uiColor: UIColor(hex: "\(gptUIPreference?.botBubbleFontColor ?? "#262626")")))
+//                            .foregroundColor(colorScheme == .dark ? Color.white : Color(uiColor: UIColor(hex: "\(gptUIPreference?.botBubbleFontColor ?? "#262626")")))
+                            .foregroundColor(Color(uiColor: UIColor(hex: "\(gptUIPreference?.botBubbleFontColor ?? "#F6F6F6")")))
                             .font(.custom("\(gptUIPreference?.fontStyle ?? "")", size: 14))
                             .overlay {
                                 RoundedCorner(topLeft: 8, topRight: 8, bottomLeft: 0, bottomRight: 8)

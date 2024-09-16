@@ -56,19 +56,19 @@ public class ThemeColors: ThemeColorsProtocol {
     }
     
     // Methods to get the appropriate color based on the color scheme
-    public func primaryBackgroundColor(for colorScheme: ColorScheme) -> Color {
+    public func primaryBackgroundColor(for colorScheme: AppColorScheme) -> Color {
         colorScheme == .dark ? primaryBackgroundColorDarkMode : primaryBackgroundColor
     }
     
-    public func secondaryBackgroundColor(for colorScheme: ColorScheme) -> Color {
+    public func secondaryBackgroundColor(for colorScheme: AppColorScheme) -> Color {
         colorScheme == .dark ? secondaryBackgroundColorDarkMode : secondaryBackgroundColor
     }
     
-    public func primaryColor(for colorScheme: ColorScheme) -> Color {
+    public func primaryColor(for colorScheme: AppColorScheme) -> Color {
         colorScheme == .dark ? primaryColorDarkMode : primaryColor
     }
     
-    public func secondaryColor(for colorScheme: ColorScheme) -> Color {
+    public func secondaryColor(for colorScheme: AppColorScheme) -> Color {
         colorScheme == .dark ? secondaryColorDarkMode : secondaryColor
     }
 }

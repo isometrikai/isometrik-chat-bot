@@ -10,7 +10,7 @@ import SwiftUI
 struct MessageToolBarView: View {
     
     // MARK: - PROPERTIES
-    @Environment(\.colorScheme) var colorScheme
+    @Environment(\.customScheme) var colorScheme
     @State var messageInput: String = ""
     @FocusState.Binding var isFocused: Bool
     @Binding var isBotTyping: Bool
@@ -28,18 +28,33 @@ struct MessageToolBarView: View {
                 .edgesIgnoringSafeArea(.all)
             ZStack(alignment: .center) {
                 HStack {
-                    TextField("Write a message", text: $messageInput)
-                        .font(.system(size: 14))
-                        .padding(.vertical, 10)
-                        .padding(.horizontal, 12)
-                        .background(appTheme.theme.colors.secondaryBackgroundColor(for: colorScheme))
-                        .cornerRadius(6)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 6)
-                                .stroke(colorScheme == .light ? Color.gray.opacity(0.2) : Color.white.opacity(0.2), lineWidth: 1)
-                        )
-                        .frame(height: 40)
-                        .focused($isFocused)
+                    ZStack(alignment: .leading) {
+                        
+                        // TextField
+                        TextField("", text: $messageInput)
+                            .font(.system(size: 14))
+                            .padding(.vertical, 10)
+                            .padding(.horizontal, 12)
+                            .foregroundColor(colorScheme == .dark ? .white : .black)
+                            .tint(colorScheme == .dark ? .white : .black)
+                            .background(appTheme.theme.colors.secondaryBackgroundColor(for: colorScheme))
+                            .cornerRadius(6)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 6)
+                                    .stroke(colorScheme == .light ? Color.gray.opacity(0.2) : Color.white.opacity(0.2), lineWidth: 1)
+                            )
+                            .frame(height: 40)
+                            .focused($isFocused)
+                        
+                        // Custom placeholder
+                        if messageInput.isEmpty {
+                            Text("Write a message")
+                                .font(.system(size: 14))
+                                .foregroundColor(colorScheme == .dark ? Color.white.opacity(0.5) : Color.black.opacity(0.5))
+                                .padding(.horizontal, 12)
+                        }
+                        
+                    }
                     
                     Button(action: {
                         if isBotTyping {

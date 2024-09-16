@@ -10,7 +10,8 @@ import SwiftUI
 public struct LaunchView: View {
     
     // MARK: - PROPERTIES
-    @Environment(\.colorScheme) var colorScheme
+    
+    @State private var colorScheme: AppColorScheme = .light
     @StateObject public var viewModel: LaunchViewModel
     @State private var scaleEffect: Bool = false
     @State private var isLoading: Bool = true
@@ -63,18 +64,22 @@ public struct LaunchView: View {
                 ChatView(viewModel: chatViewModel) {
                     dismissHostingController()
                 }
-                
             }
         }
+        .modifier(ColorSchemeModifier(colorScheme: colorScheme))
         .onAppear {
             Task {
                 do {
                     isLoading = true
                     try await viewModel.getMyGptsContent()
-                    try await Task.sleep(nanoseconds: 4_000_000_000) // 1 second delay intentionally added
-                    isLoading = false
-                    navigateToChatView = true // Trigger navigation
-                    HapticFeedbackManager.shared.triggerNotification(type: .success)
+        
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+                        self.colorScheme = AppColorScheme(rawValue: viewModel.myGptSessionData?.data?.first?.uiPreferences?.modeTheme ?? 1)!
+                        isLoading = false
+                        navigateToChatView = true // Trigger navigation
+                        HapticFeedbackManager.shared.triggerNotification(type: .success)
+                    }
+                    
                 } catch {
                     // Handle the error here
                     isLoading = false

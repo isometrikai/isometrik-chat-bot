@@ -10,7 +10,7 @@ import SwiftUI
 struct WidgetView: View {
     
     // MARK: - PROPERTIES
-    @Environment(\.colorScheme) var colorScheme
+    @Environment(\.customScheme) var colorScheme
     var appTheme: AppTheme
     var widgetData: ChatBotWidget?
     var gptUIPreference: MyGptUIPreferences?
@@ -33,6 +33,7 @@ struct WidgetView: View {
             .frame(width: 250, height: 120)
             VStack(alignment: .leading) {
                 Text(widgetData?.title ?? "")
+                    .foregroundColor(colorScheme == .dark ? .white : .black)
                     .font(.system(size: 14))
                     .multilineTextAlignment(.leading)
                     .lineLimit(2)
@@ -40,6 +41,7 @@ struct WidgetView: View {
                     .font(.system(size: 12))
                     .foregroundColor(Color(uiColor: UIColor(hex: "#94A0AF")))
                 Text(getDescriptionText())
+                    .foregroundColor(colorScheme == .dark ? .white : .black)
                     .font(.system(size: 14))
                     .padding(EdgeInsets(top: 12, leading: 0, bottom: 0, trailing: 0))
                 if widgetData?.buttontext != nil {

@@ -11,7 +11,7 @@ import Combine
 struct ChatMessageScrollView: View {
     
     // MARK: - PROPERTIES
-    @Environment(\.colorScheme) var colorScheme
+    @Environment(\.customScheme) var colorScheme
     @ObservedObject var viewModel: ChatViewModel
     @Namespace var bottomId
     

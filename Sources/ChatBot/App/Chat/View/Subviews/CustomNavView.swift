@@ -9,7 +9,7 @@ import SwiftUI
 
 struct CustomNavView: View {
     
-    @Environment(\.colorScheme) var colorScheme
+    @Environment(\.customScheme) var colorScheme
     @Binding var isLeadingActionEnabled: Bool
     @Binding var isTrailingActionEnabled: Bool
     var chatBotName: String
@@ -34,6 +34,8 @@ struct CustomNavView: View {
                         } label: {
                             Image(systemName: "xmark")
                                 .resizable()
+                                .renderingMode(.template)
+                                .foregroundColor(colorScheme == .dark ? .white : .black)
                                 .scaledToFit()
                                 .frame(width: 15, height: 15)
                                 .padding(10)
@@ -55,8 +57,10 @@ struct CustomNavView: View {
                                 .frame(width: 45, height: 45)
                             VStack(alignment: .leading) {
                                 Text(chatBotName)
+                                    .foregroundColor(colorScheme == .dark ? .white : .black)
                                     .font(.system(size: 20, weight: .bold))
                                 Text("AI Assistant")
+                                    .foregroundColor(colorScheme == .dark ? .white : .black)
                                     .font(.system(size: 12))
                             }
                         }
@@ -73,6 +77,8 @@ struct CustomNavView: View {
                         } label: {
                             Image(systemName: "arrow.clockwise")
                                 .resizable()
+                                .renderingMode(.template)
+                                .foregroundColor(colorScheme == .dark ? .white : .black)
                                 .scaledToFit()
                                 .frame(width: 15, height: 15)
                                 .padding(10)
