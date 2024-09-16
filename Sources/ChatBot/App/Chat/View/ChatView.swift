@@ -37,7 +37,8 @@ struct ChatView: View {
             CustomNavView(
                 isLeadingActionEnabled: .constant(true), 
                 isTrailingActionEnabled: isTrailingActionEnabled,
-                chatBotName: viewModel.appConfigurations.chatBotName,
+                chatBotName: viewModel.myGptSessionData?.data?.first?.name ?? "ChatBot",
+                chatBotImageUrl: viewModel.myGptSessionData?.data?.first?.profileImage ?? "",
                 appTheme: viewModel.appConfigurations.appTheme,
                 leadingButtonAction: handleLeadingAction,
                 trailingButtonAction: handleTrailingAction

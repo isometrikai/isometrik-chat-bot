@@ -9,7 +9,6 @@ import Foundation
 
 public class AppConfigurationManager {
     
-    public let chatBotName: String
     public let chatBotId: String
     public let appTheme: AppTheme
     public let appSecret: String
@@ -18,7 +17,6 @@ public class AppConfigurationManager {
     public let storeCategoryId: String
     
     public init(
-        chatBotName: String = "Eazy",
         chatBotId: String,
         userId: String,
         appSecret: String,
@@ -26,7 +24,6 @@ public class AppConfigurationManager {
         storeCategoryId: String,
         appTheme: AppTheme = AppTheme()
     ) {
-        self.chatBotName = chatBotName
         self.chatBotId = chatBotId
         self.appTheme = appTheme
         self.appSecret = appSecret

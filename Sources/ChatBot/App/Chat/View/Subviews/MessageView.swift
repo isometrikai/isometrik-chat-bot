@@ -11,9 +11,10 @@ struct MessageView: View {
     
     // MARK: - PROPERTIES
     
-    @Environment(\.colorScheme) var colorScheme
+    @Environment(\.customScheme) var colorScheme
     var appTheme: AppTheme
     var message: CustomMessageModel
+    var chatBotImageUrl: String
     var gptUIPreference: MyGptUIPreferences?
     var widgetAction: ((ChatBotWidget?)->Void)?
     
@@ -39,10 +40,16 @@ struct MessageView: View {
                         .foregroundColor(Color(uiColor: UIColor(hex: "\(gptUIPreference?.userBubbleFontColor ?? "#FFFFFF")")))
                         .font(.custom("\(gptUIPreference?.fontStyle ?? "")", size: 14))
                 } else {
-                    appTheme.theme.images.appLogo
-                        .resizable()
-                        .foregroundColor(.white)
-                        .frame(width: 40, height: 40)
+                    
+                    ZStack {
+                        Circle()
+                            .fill(colorScheme == .dark ? Color.white.opacity(0.1) : Color.black.opacity(0.1))
+                            .frame(width: 40, height: 40)
+                        URLImageView(url: URL(string: chatBotImageUrl)!)
+                            .scaledToFill()
+                            .frame(width: 40, height: 40)
+                            .clipShape(Circle())
+                    }
                     
                     if message.isResponding {
                         ZStack(alignment: .bottomLeading) {
@@ -65,10 +72,8 @@ struct MessageView: View {
                     } else {
                         Text(message.text)
                             .padding(12)
-//                            .background(colorScheme == .dark ? appTheme.theme.colors.primaryBackgroundColorDarkMode : Color(uiColor: UIColor(hex: "\(gptUIPreference?.botBubbleColor ?? "#F6F6F6")")))
                             .background(Color(uiColor: UIColor(hex: "\(gptUIPreference?.botBubbleColor ?? "#F6F6F6")")))
                             .clipShape(RoundedCorner(topLeft: 8, topRight: 8, bottomLeft: 0, bottomRight: 8))
-//                            .foregroundColor(colorScheme == .dark ? Color.white : Color(uiColor: UIColor(hex: "\(gptUIPreference?.botBubbleFontColor ?? "#262626")")))
                             .foregroundColor(Color(uiColor: UIColor(hex: "\(gptUIPreference?.botBubbleFontColor ?? "#F6F6F6")")))
                             .font(.custom("\(gptUIPreference?.fontStyle ?? "")", size: 14))
                             .overlay {

@@ -29,7 +29,7 @@ struct ChatMessageScrollView: View {
                 ScrollView {
                     if viewModel.myGptSessionData != nil, showWelcomeView {
                         WelcomeView(
-                            chatBotName: viewModel.appConfigurations.chatBotName,
+                            chatBotName: viewModel.myGptSessionData?.data?.first?.name ?? "",
                             appTheme: viewModel.appConfigurations.appTheme,
                             myGptSessionData: viewModel.myGptSessionData,
                             uiPreference: viewModel.myGptSessionData?.data?.first?.uiPreferences,
@@ -44,6 +44,7 @@ struct ChatMessageScrollView: View {
                             MessageView(
                                 appTheme: viewModel.appConfigurations.appTheme,
                                 message: message,
+                                chatBotImageUrl: viewModel.myGptSessionData?.data?.first?.profileImage ?? "",
                                 gptUIPreference: viewModel.myGptSessionData?.data?.first?.uiPreferences,
                                 widgetAction: { widget in
                                     widgetAction?(widget)

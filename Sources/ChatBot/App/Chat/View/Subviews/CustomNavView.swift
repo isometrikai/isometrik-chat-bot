@@ -13,6 +13,7 @@ struct CustomNavView: View {
     @Binding var isLeadingActionEnabled: Bool
     @Binding var isTrailingActionEnabled: Bool
     var chatBotName: String
+    var chatBotImageUrl: String
     var appTheme: AppTheme
     var leadingButtonAction: (() -> Void)?
     var trailingButtonAction: (() -> Void)?
@@ -51,10 +52,16 @@ struct CustomNavView: View {
                         // profile view
                         
                         HStack {
-                            appTheme.theme.images.appLogo
-                                .resizable()
-                                .scaledToFill()
-                                .frame(width: 45, height: 45)
+                            ZStack {
+                                Circle()
+                                    .fill(colorScheme == .dark ? Color.white.opacity(0.1) : Color.black.opacity(0.1))
+                                    .frame(width: 45, height: 45)
+                                URLImageView(url: URL(string: chatBotImageUrl)!)
+                                    .scaledToFill()
+                                    .frame(width: 45, height: 45)
+                                    .clipped()
+                                    .cornerRadius(22.5)
+                            }
                             VStack(alignment: .leading) {
                                 Text(chatBotName)
                                     .foregroundColor(colorScheme == .dark ? .white : .black)
