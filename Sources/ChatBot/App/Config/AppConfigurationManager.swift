@@ -15,6 +15,7 @@ public class AppConfigurationManager {
     public let licenseKey: String
     public let userId: String
     public let storeCategoryId: String
+    public let location: String
     
     public init(
         chatBotId: String,
@@ -22,7 +23,8 @@ public class AppConfigurationManager {
         appSecret: String,
         licenseKey: String,
         storeCategoryId: String,
-        appTheme: AppTheme = AppTheme()
+        appTheme: AppTheme = AppTheme(),
+        location: String
     ) {
         self.chatBotId = chatBotId
         self.appTheme = appTheme
@@ -30,6 +32,7 @@ public class AppConfigurationManager {
         self.licenseKey = licenseKey
         self.userId = userId
         self.storeCategoryId = storeCategoryId
+        self.location = location
     }
     
 }

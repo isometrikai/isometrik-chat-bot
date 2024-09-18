@@ -56,7 +56,7 @@ struct CustomNavView: View {
                                 Circle()
                                     .fill(colorScheme == .dark ? Color.white.opacity(0.1) : Color.black.opacity(0.1))
                                     .frame(width: 45, height: 45)
-                                URLImageView(url: URL(string: chatBotImageUrl)!)
+                                URLImageView(url: URL(string: chatBotImageUrl) ?? URL(string: "https://i.sstatic.net/frlIf.png"))
                                     .scaledToFill()
                                     .frame(width: 45, height: 45)
                                     .clipped()

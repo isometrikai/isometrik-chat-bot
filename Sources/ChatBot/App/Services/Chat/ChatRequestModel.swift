@@ -14,6 +14,7 @@ public struct GPTClientRequestParameters: Encodable {
     public let sessionId: String
     public let storeCategoryId: String
     public let userId: String
+    public let location: String
     
     enum CodingKeys: String, CodingKey {
         case chatBotId = "chat_bot_id"
@@ -21,6 +22,7 @@ public struct GPTClientRequestParameters: Encodable {
         case sessionId
         case storeCategoryId
         case userId
+        case location
     }
     
     public func encode(to encoder: Encoder) throws {
@@ -30,6 +32,7 @@ public struct GPTClientRequestParameters: Encodable {
         try container.encode(self.sessionId, forKey: .sessionId)
         try container.encode(self.storeCategoryId, forKey: .storeCategoryId)
         try container.encode(self.userId, forKey: .userId)
+        try container.encode(self.location, forKey: .location)
     }
     
 }
