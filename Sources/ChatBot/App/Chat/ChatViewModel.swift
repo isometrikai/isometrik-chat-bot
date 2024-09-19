@@ -70,7 +70,9 @@ public class ChatViewModel: ObservableObject {
                     sessionId: sessionId,
                     storeCategoryId: appConfigurations.storeCategoryId,
                     userId: appConfigurations.userId,
-                    location: appConfigurations.location
+                    location: appConfigurations.location,
+                    longitude: appConfigurations.longitude,
+                    latitude: appConfigurations.latitude
                 )
                 
                 let data = try await networkMiddleware.performRequest {
