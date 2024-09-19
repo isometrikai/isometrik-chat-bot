@@ -18,6 +18,9 @@ To integrate the SDK, ensure you have the following credentials ready:
 - `licenseKey`
 - `appSecret`
 - `storeCategoryId`
+- `location`
+- `latitude` (optional)
+- `longitude` (optional)
 
 ### 2. Initialize the SDK
 
@@ -29,7 +32,10 @@ let appConfig = AppConfigurationManager(
     userId: "YOUR USER ID",
     appSecret: "YOUR APP SECRET ID",
     licenseKey: "YOUR LICENSE KEY",
-    storeCategoryId: "YOUR STORE CATEGORY ID"
+    storeCategoryId: "YOUR STORE CATEGORY ID",
+    location: "YOUR CURRENT LOCATION",
+    latitude: "YOUR LATITUDE", // optional
+    longitude: "YOUR LONGITUDE" // optional
 )
 ```
 
