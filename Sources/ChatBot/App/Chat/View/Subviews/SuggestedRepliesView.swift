@@ -31,7 +31,7 @@ struct SuggestedRepliesView: View {
                         .font(.system(size: 14))
                         .foregroundColor(Color(hex: uiPreference?.primaryColor ?? ""))
                         .overlay {
-                            getButtonOverlay()
+                            getButtonOverlay(color: Color(hex: uiPreference?.primaryColor ?? ""))
                         }
                         .padding(.top, 8)
                 }
@@ -39,20 +39,6 @@ struct SuggestedRepliesView: View {
             }
         } //: LazyVStack
     } //: BODY
-    
-    // MARK: - FUNCTIONS
-    func getButtonOverlay() -> some View {
-        Group {
-            if #available(iOS 17.0, *) {
-                RoundedRectangle(cornerRadius: 25)
-                    .stroke(Color(hex: uiPreference?.primaryColor ?? ""), lineWidth: 1)
-                    .background(Color.clear)
-            } else {
-                RoundedRectangle(cornerRadius: 25.0)
-                    .stroke(Color(hex: uiPreference?.primaryColor ?? ""), lineWidth: 1)
-            }
-        }
-    }
     
 }
 

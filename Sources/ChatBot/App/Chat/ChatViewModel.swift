@@ -8,13 +8,13 @@
 import Foundation
 import CryptoKit
 
-public enum WidgetType {
-    case store
-    case dish
+enum WidgetType: String {
+    case cardView = "Card View"
+    case responseView = "Response Flow"
 }
 
 public protocol ChatBotDelegate {
-    func navigateFromBot(withData: ChatBotWidget?, forType: WidgetType?, dismissOnSuccess: @escaping (Bool)->())
+    func navigateFromBot(withData: ChatBotWidget?, dismissOnSuccess: @escaping (Bool)->())
 }
 
 @MainActor
@@ -33,6 +33,9 @@ public class ChatViewModel: ObservableObject {
     @Published var isTyping: Bool = false
     @Published var appConfigurations: AppConfigurationManager
     @Published var hideSuggestedReplies: Bool = false
+    
+    var widgetResponseSheetTitle: String = ""
+    var widgetResponseOptions: [ChatBotWidget] = []
     
     // MARK: - INITIALIZER
     
@@ -151,6 +154,13 @@ public class ChatViewModel: ObservableObject {
         
         // reset the suggestion hidden status
         self.hideSuggestedReplies = false
+    }
+    
+    func removeWidgetResponseViewOnReply(){
+        DispatchQueue.main.async {
+            let lastMessageIndex = self.messages.count - 1
+            self.messages[lastMessageIndex].messageData?.widgetData?[0].repliedStatusToSuggestions = true
+        }
     }
     
     private static func getHashedSessionId(id: String) -> String {

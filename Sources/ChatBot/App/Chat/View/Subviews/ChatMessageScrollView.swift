@@ -20,6 +20,8 @@ struct ChatMessageScrollView: View {
     
     var suggestedReplyAction: ((String)->Void)?
     var widgetAction: ((ChatBotWidget?)->Void)?
+    var widgetResponseAction: ((String?)->Void)?
+    var widgetViewAllResponseAction: ((String?, [ChatBotWidget]?)->Void)?
     
     // MARK: - BODY
     
@@ -48,6 +50,12 @@ struct ChatMessageScrollView: View {
                                 gptUIPreference: viewModel.myGptSessionData?.data?.first?.uiPreferences,
                                 widgetAction: { widget in
                                     widgetAction?(widget)
+                                },
+                                widgetResponseAction: { reply in
+                                    widgetResponseAction?(reply)
+                                },
+                                widgetViewAllResponseAction: { (title, widgetData) in
+                                    widgetViewAllResponseAction?(title, widgetData)
                                 }
                             )
                                 .transition(.push(from: .bottom))
@@ -57,7 +65,7 @@ struct ChatMessageScrollView: View {
                     }
                 }
                 .scrollIndicators(.hidden)
-                .modifier(ContentMarginsModifier())
+                .customContentMargins(top: 10, bottom: 10)
                 .onTapGesture {
                     isFocused = false
                 }
@@ -85,16 +93,4 @@ struct ChatMessageScrollView: View {
         }
     }
     
-}
-
-fileprivate struct ContentMarginsModifier: ViewModifier {
-    func body(content: Content) -> some View {
-        if #available(iOS 17.0, *) {
-            content
-                .contentMargins(.top, 10, for: .scrollContent)
-        } else {
-            content
-                .padding(.top, 10)
-        }
-    }
 }

@@ -13,7 +13,7 @@ public struct GptClientResponseModel: Decodable {
     //let imageData: [JSONAny]?
     public let websiteSource: String?
     //let sources: [JSONAny]?
-    public let widgetData: [WidgetData]?
+    public var widgetData: [WidgetData]?
     public let inputTokenCount, id, parsedRequestID, requestID: Int?
     
     enum CodingKeys: String, CodingKey {
@@ -41,11 +41,12 @@ public struct GptClientResponseModel: Decodable {
     
 }
 
-public struct WidgetData: Decodable {
+public struct WidgetData: Decodable, Hashable {
     
     public let widgetId: Int?
     public let type: String?
     public let widget: [ChatBotWidget]?
+    public var repliedStatusToSuggestions: Bool = false
     
     enum CodingKeys: String, CodingKey {
         case widgetId
@@ -78,6 +79,7 @@ public struct ChatBotWidget: Decodable, Hashable {
     public var discountPrice: String?
     public var averageRating: Double?
     public var storeId: String?
+    public var actionText: String?
     
     enum CodingKeys: String, CodingKey {
         case imageURL
@@ -90,9 +92,10 @@ public struct ChatBotWidget: Decodable, Hashable {
         case discountPrice = "discount_price"
         case averageRating = "avg_rating"
         case storeId = "store_id"
+        case actionText
     }
     
-    public init(imageURL: String?, title: String?, subtitle: String?, price: String?, currencyCode: String?, averageCost:Int?, supportedOrderTypes: Int?) {
+    public init(imageURL: String?, title: String?, subtitle: String?, price: String?, currencyCode: String?, averageCost:Int?, supportedOrderTypes: Int?, actionText: String?) {
         self.id = UUID()
         self.imageURL = imageURL
         self.productID = nil
@@ -108,6 +111,7 @@ public struct ChatBotWidget: Decodable, Hashable {
         self.averageCost = averageCost
         self.currencyCode = currencyCode
         self.discountPrice = nil
+        self.actionText = nil
     }
     
     public init(from decoder: Decoder) throws {
@@ -128,6 +132,7 @@ public struct ChatBotWidget: Decodable, Hashable {
         self.discountPrice = try container.decodeIfPresent(String.self, forKey: .discountPrice)
         self.averageRating = try container.decodeIfPresent(Double.self, forKey: .averageRating)
         self.storeId = try container.decodeIfPresent(String.self, forKey: .storeId)
+        self.actionText = try container.decodeIfPresent(String.self, forKey: .actionText)
     }
     
 }

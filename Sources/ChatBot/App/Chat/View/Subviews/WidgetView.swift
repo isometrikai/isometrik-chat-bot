@@ -24,7 +24,7 @@ struct WidgetView: View {
                 ZStack(alignment: .center) {
                     Rectangle()
                         .fill(Color.gray.opacity(0.2))
-                    URLImageView(url: URL(string: widgetData?.imageURL ?? "")!)
+                    URLImageView(url: URL(string: widgetData?.imageURL ?? "") ?? URL(string: "https://i.sstatic.net/frlIf.png"))
                         .scaledToFit()
                         .clipped()
                 }
@@ -58,7 +58,7 @@ struct WidgetView: View {
                         .padding(.vertical, 10)
                         .padding(.horizontal, 16)
                         .overlay {
-                            getButtonOverlay()
+                            getButtonOverlay(color: Color(hex: gptUIPreference?.primaryColor ?? ""))
                         }
                         .padding(.top, 8)
                     }
@@ -138,19 +138,6 @@ struct WidgetView: View {
             return AnyView(Circle().fill(.clear).frame(width: .zero, height: .zero))
         }
         
-    }
-    
-    func getButtonOverlay() -> some View {
-        Group {
-            if #available(iOS 17.0, *) {
-                RoundedRectangle(cornerRadius: 25)
-                    .stroke(Color(uiColor: UIColor(hex: gptUIPreference?.primaryColor ?? "")), lineWidth: 1)
-                    .background(Color.clear)
-            } else {
-                RoundedRectangle(cornerRadius: 25.0)
-                    .stroke(Color(uiColor: UIColor(hex: gptUIPreference?.primaryColor ?? "")), lineWidth: 1)
-            }
-        }
     }
     
 }

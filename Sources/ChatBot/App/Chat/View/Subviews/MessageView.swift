@@ -17,6 +17,8 @@ struct MessageView: View {
     var chatBotImageUrl: String
     var gptUIPreference: MyGptUIPreferences?
     var widgetAction: ((ChatBotWidget?)->Void)?
+    var widgetResponseAction: ((String?)->Void)?
+    var widgetViewAllResponseAction: ((String?, [ChatBotWidget]?)->Void)?
     
     private var leadingPadding: CGFloat {
         message.isFromUser ? 40 : 0
@@ -54,7 +56,6 @@ struct MessageView: View {
                     if message.isResponding {
                         ZStack(alignment: .bottomLeading) {
                             Rectangle()
-                                //.fill(colorScheme == .dark ? appTheme.theme.colors.primaryBackgroundColorDarkMode : Color(uiColor: UIColor(hex: "\(gptUIPreference?.botBubbleColor ?? "#F6F6F6")")))
                                 .fill(Color(uiColor: UIColor(hex: "\(gptUIPreference?.botBubbleColor ?? "#F6F6F6")")))
                                 .frame(width: 100 ,height: 50)
                                 .clipShape(RoundedCorner(topLeft: 8, topRight: 8, bottomLeft: 0, bottomRight: 8))
@@ -90,22 +91,75 @@ struct MessageView: View {
             .padding(.leading, leadingPadding)
             .padding(.trailing, trailingPadding)
             
-            if message.messageData != nil && message.messageData?.widgetData?.count ?? 0 > 0 {
-                ScrollView(.horizontal, showsIndicators: false) {
-                    LazyHStack(spacing: 12) {
-                        ForEach((message.messageData?.widgetData?.first?.widget ?? [])!, id: \.self) { widget in
-                            WidgetView(
-                                appTheme: appTheme,
-                                widgetData: widget,
-                                gptUIPreference: gptUIPreference
-                            ) { widget in
-                                widgetAction?(widget)
+            if !getWidgetData().isEmpty {
+                
+                let widgetData = getWidgetData()
+                let widgetType = getWidgetType()
+                
+                switch widgetType {
+                case .cardView:
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        LazyHStack(spacing: 12) {
+                            ForEach(widgetData, id: \.self) { widget in
+                                WidgetView(
+                                    appTheme: appTheme,
+                                    widgetData: widget,
+                                    gptUIPreference: gptUIPreference
+                                ) { widget in
+                                    widgetAction?(widget)
+                                }
+                                .padding(.vertical, 4)
                             }
-                            .padding(.vertical, 4)
                         }
                     }
+                    .customContentMargins(leading: 65, trailing: 16)
+                case .responseView:
+                    if !getRepliedStatusToSuggestions() {
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            LazyHStack(spacing: 12) {
+                                
+                                // Loop through the first 3 widgets
+                                ForEach(widgetData.prefix(3), id: \.self) { widget in
+                                    Button {
+                                        widgetResponseAction?(widget.actionText)
+                                    } label: {
+                                        Text(widget.actionText ?? "")
+                                            .padding(.vertical, 8)
+                                            .padding(.horizontal, 16)
+                                            .font(.system(size: 14))
+                                            .foregroundColor(Color(hex: gptUIPreference?.primaryColor ?? ""))
+                                            .overlay {
+                                                getButtonOverlay(color: Color(hex: gptUIPreference?.primaryColor ?? ""))
+                                            }
+                                            .padding(.vertical, 4)
+                                    }
+                                    .buttonStyle(AnimatedButtonStyle())
+                                }
+                                
+                                // Add "View All" button
+                                Button {
+                                    widgetViewAllResponseAction?("", widgetData)
+                                } label: {
+                                    Text("View All")
+                                        .padding(.vertical, 8)
+                                        .padding(.horizontal, 16)
+                                        .font(.system(size: 14))
+                                        .foregroundColor(.white)
+                                        .overlay {
+                                            getButtonOverlay(isDashed: true, color: Color.white.opacity(0.5))
+                                        }
+                                        .padding(.vertical, 4)
+                                }
+                                .buttonStyle(AnimatedButtonStyle())
+                                
+                            }//: LazyHStack
+                        }
+                        .customContentMargins(leading: 65, trailing: 16)
+                    }
+                case nil:
+                    AnyView(EmptyView())
                 }
-                .modifier(ContentMarginsModifier())
+                
             }
             
         } //: VSTACK
@@ -122,18 +176,34 @@ struct MessageView: View {
         
     }
     
-}
-
-fileprivate struct ContentMarginsModifier: ViewModifier {
-    func body(content: Content) -> some View {
-        if #available(iOS 17.0, *) {
-            content
-                .contentMargins(.leading, 65, for: .scrollContent)
-                .contentMargins(.trailing, 16, for: .scrollContent)
-        } else {
-            content
-                .padding(.leading, 65)
-                .padding(.trailing, 16)
+    func getWidgetData() -> [ChatBotWidget] {
+        
+        guard let widgetData = message.messageData?.widgetData, !widgetData.isEmpty else {
+            return []
         }
+        return widgetData.first?.widget ?? []
+        
     }
+    
+    func getWidgetType() -> WidgetType? {
+
+        guard let widgetData = message.messageData?.widgetData, !widgetData.isEmpty else {
+            return nil
+        }
+        
+        let widgetTypeString = widgetData.first?.type ?? ""
+        return WidgetType(rawValue: widgetTypeString)
+        
+    }
+    
+    func getRepliedStatusToSuggestions() -> Bool {
+        
+        guard let widgetData = message.messageData?.widgetData, !widgetData.isEmpty else {
+            return false
+        }
+        
+        return widgetData.first?.repliedStatusToSuggestions ?? false
+        
+    }
+    
 }

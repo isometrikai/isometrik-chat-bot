@@ -22,6 +22,7 @@ struct ChatView: View {
     
     @State private var showDismissPopup = false
     @State private var showAlertForResetingSession: Bool = false
+    @State private var showViewAllWidgetResponseOptions: Bool = false
     
     private var isTrailingActionEnabled: Binding<Bool> {
         Binding(
@@ -33,69 +34,85 @@ struct ChatView: View {
     // MARK: - BODY
     
     var body: some View {
-        VStack(spacing: 0) {
-            CustomNavView(
-                isLeadingActionEnabled: .constant(true), 
-                isTrailingActionEnabled: isTrailingActionEnabled,
-                chatBotName: viewModel.myGptSessionData?.data?.first?.name ?? "ChatBot",
-                chatBotImageUrl: viewModel.myGptSessionData?.data?.first?.profileImage ?? "",
-                appTheme: viewModel.appConfigurations.appTheme,
-                leadingButtonAction: handleLeadingAction,
-                trailingButtonAction: handleTrailingAction
-            )
-            ChatMessageScrollView(
-                viewModel: viewModel,
-                isFocused: $isFocused,
-                suggestedReplyAction: sendMessage,
-                widgetAction: handleWidgetAction
-            )
-            MessageToolBarView(
-                isFocused: $isFocused,
-                isBotTyping: $viewModel.isTyping,
-                appTheme: viewModel.appConfigurations.appTheme,
-                sendAction: sendMessage,
-                cancelAction: cancelSendMessage
-            )
-        }//: VSTACK
-        .navigationBarHidden(true)
-        .onAppear {
-            isFocused = true
-        }
-        .onChange(of: showDismissPopup) { newValue in
-            if newValue {
-                PopupManager.shared.showPopup(
-                    title: "Exit Chat",
-                    message: "You will lose your current chat context. Are you sure you want to exit?",
-                    animationType: .slideInBottom,
-                    actions: [
-                        PopupAction(title: "cancel".uppercased(), buttonType: .cancel , handler: {
-                            showDismissPopup = false
-                        }),
-                        PopupAction(title: "exit chat".uppercased(), buttonType: .destructive , handler: {
-                            dismiss_callback?()
-                            dismiss()
-                        })
-                    ]
+        ZStack {
+            VStack(spacing: 0) {
+                CustomNavView(
+                    isLeadingActionEnabled: .constant(true),
+                    isTrailingActionEnabled: isTrailingActionEnabled,
+                    chatBotName: viewModel.myGptSessionData?.data?.first?.name ?? "ChatBot",
+                    chatBotImageUrl: viewModel.myGptSessionData?.data?.first?.profileImage ?? "",
+                    appTheme: viewModel.appConfigurations.appTheme,
+                    leadingButtonAction: handleLeadingAction,
+                    trailingButtonAction: handleTrailingAction
                 )
+                ChatMessageScrollView(
+                    viewModel: viewModel,
+                    isFocused: $isFocused,
+                    suggestedReplyAction: sendMessage,
+                    widgetAction: handleWidgetAction,
+                    widgetResponseAction: handleWidgetResponseAction,
+                    widgetViewAllResponseAction: handleWidgetViewAllResponseAction
+                )
+                MessageToolBarView(
+                    isFocused: $isFocused,
+                    isBotTyping: $viewModel.isTyping,
+                    appTheme: viewModel.appConfigurations.appTheme,
+                    sendAction: sendMessage,
+                    cancelAction: cancelSendMessage
+                )
+            }//: VSTACK
+            .navigationBarHidden(true)
+            .onAppear {
+                isFocused = true
+            }
+            .onChange(of: showDismissPopup) { newValue in
+                if newValue {
+                    PopupManager.shared.showPopup(
+                        title: "Exit Chat",
+                        message: "You will lose your current chat context. Are you sure you want to exit?",
+                        animationType: .slideInBottom,
+                        actions: [
+                            PopupAction(title: "cancel".uppercased(), buttonType: .cancel , handler: {
+                                showDismissPopup = false
+                            }),
+                            PopupAction(title: "exit chat".uppercased(), buttonType: .destructive , handler: {
+                                dismiss_callback?()
+                                dismiss()
+                            })
+                        ]
+                    )
+                }
+            }
+            .onChange(of: showAlertForResetingSession) { newValue in
+                if newValue {
+                    PopupManager.shared.showPopup(
+                        title: "Are you sure want to start new chat?",
+                        message: "",
+                        animationType: .slideInBottom,
+                        actions: [
+                            PopupAction(title: "cancel".uppercased(), buttonType: .cancel , handler: {
+                                showAlertForResetingSession = false
+                            }),
+                            PopupAction(title: "yes".uppercased(), buttonType: ._default , handler: {
+                                showAlertForResetingSession = false
+                                viewModel.resetSession()
+                            })
+                        ]
+                    )
+                }
+            }
+            .sheet(isPresented: $showViewAllWidgetResponseOptions) {
+                WidgetResponseOptionsView(
+                    title: viewModel.widgetResponseSheetTitle,
+                    widgetData: viewModel.widgetResponseOptions,
+                    appTheme: viewModel.appConfigurations.appTheme,
+                    gptUIPreference: viewModel.myGptSessionData?.data?.first?.uiPreferences,
+                    responseCallback: handleWidgetResponseAction
+                )
+                .presentationDetents([.fraction(0.7)])
             }
         }
-        .onChange(of: showAlertForResetingSession) { newValue in
-            if newValue {
-                PopupManager.shared.showPopup(
-                    title: "Are you sure want to start new chat?",
-                    message: "",
-                    animationType: .slideInBottom,
-                    actions: [
-                        PopupAction(title: "cancel".uppercased(), buttonType: .cancel , handler: {
-                            showAlertForResetingSession = false
-                        }),
-                        PopupAction(title: "yes".uppercased(), buttonType: ._default , handler: {
-                            viewModel.resetSession()
-                        })
-                    ]
-                )
-            }
-        }
+        
     }
     
     // MARK: - FUNTION
@@ -128,11 +145,27 @@ struct ChatView: View {
     }
     
     private func handleWidgetAction(widget: ChatBotWidget?) {
-        viewModel.delegate?.navigateFromBot(withData: widget, forType: .store, dismissOnSuccess: { success in
+        viewModel.delegate?.navigateFromBot(withData: widget, dismissOnSuccess: { success in
             dismiss_callback?()
             dismiss()
         })
         HapticFeedbackManager.shared.triggerSelection()
+    }
+    
+    private func handleWidgetResponseAction(reply: String?){
+        guard let reply else { return }
+        viewModel.removeWidgetResponseViewOnReply()
+        sendMessage(message: reply)
+        HapticFeedbackManager.shared.triggerSelection()
+    }
+    
+    private func handleWidgetViewAllResponseAction(title: String?, widgets: [ChatBotWidget]?){
+        
+        guard let title , let widgets else { return }
+        viewModel.widgetResponseOptions = widgets
+        viewModel.widgetResponseSheetTitle = title
+        showViewAllWidgetResponseOptions = true
+        HapticFeedbackManager.shared.triggerImpact(style: .heavy)
     }
     
     func sendMessageWithBotChanges(message: String) {
