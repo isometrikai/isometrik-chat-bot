@@ -22,7 +22,7 @@ struct ChatView: View {
     
     @State private var showDismissPopup = false
     @State private var showAlertForResetingSession: Bool = false
-    @State private var showViewAllWidgetResponseOptions: Bool = false
+    @State private var showViewAllWidgetForResponseOptions: Bool = false
     
     private var isTrailingActionEnabled: Binding<Bool> {
         Binding(
@@ -101,7 +101,7 @@ struct ChatView: View {
                     )
                 }
             }
-            .sheet(isPresented: $showViewAllWidgetResponseOptions) {
+            .sheet(isPresented: $showViewAllWidgetForResponseOptions) {
                 WidgetResponseOptionsView(
                     title: viewModel.widgetResponseSheetTitle,
                     widgetData: viewModel.widgetResponseOptions,
@@ -159,13 +159,21 @@ struct ChatView: View {
         HapticFeedbackManager.shared.triggerSelection()
     }
     
-    private func handleWidgetViewAllResponseAction(title: String?, widgets: [ChatBotWidget]?){
+    private func handleWidgetViewAllResponseAction(title: String?, widgets: [ChatBotWidget]?, widgetType: WidgetType){
         
         guard let title , let widgets else { return }
-        viewModel.widgetResponseOptions = widgets
-        viewModel.widgetResponseSheetTitle = title
-        showViewAllWidgetResponseOptions = true
-        HapticFeedbackManager.shared.triggerImpact(style: .heavy)
+        
+        switch widgetType {
+        case .cardView:
+            // need to handle view all for restraunt or dish view
+            break
+        case .responseView:
+            viewModel.widgetResponseOptions = widgets
+            viewModel.widgetResponseSheetTitle = title
+            showViewAllWidgetForResponseOptions = true
+            HapticFeedbackManager.shared.triggerImpact(style: .heavy)
+        }
+        
     }
     
     func sendMessageWithBotChanges(message: String) {

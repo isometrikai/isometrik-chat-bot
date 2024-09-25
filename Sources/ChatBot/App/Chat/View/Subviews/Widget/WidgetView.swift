@@ -58,10 +58,10 @@ struct WidgetView: View {
                         .padding(.vertical, 10)
                         .padding(.horizontal, 16)
                         .overlay {
-                            getButtonOverlay(color: Color(hex: gptUIPreference?.primaryColor ?? ""))
+                            getButtonOverlay(borderColor: .clear, backgroundColor: Color(uiColor: UIColor(hex: gptUIPreference?.primaryColor ?? "").withAlphaComponent(0.1)), radius: 6)
                         }
-                        .padding(.top, 8)
                     }
+                    .cornerRadius(6)
                     .buttonStyle(AnimatedButtonStyle())
                     .contentShape(Rectangle()) // This increases the tappable area to the size of the button content
                 }
@@ -69,7 +69,7 @@ struct WidgetView: View {
             .padding(.horizontal, 8)
             .padding(.vertical, 8)
         }
-        .frame(width: 250)
+        .frame(width: 250, height: 250)
         .background(appTheme.theme.colors.primaryBackgroundColor(for: colorScheme))
         .cornerRadius(6)
         .overlay(

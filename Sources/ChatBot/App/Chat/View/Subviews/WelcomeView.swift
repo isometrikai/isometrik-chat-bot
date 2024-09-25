@@ -17,8 +17,6 @@ struct WelcomeView: View {
     @Binding var hideSuggestedReplies: Bool
     var repliedWith: (String) -> Void
     
-   
-    
     // MARK: - BODY
     
     var body: some View {

@@ -16,9 +16,10 @@ struct MessageView: View {
     var message: CustomMessageModel
     var chatBotImageUrl: String
     var gptUIPreference: MyGptUIPreferences?
+    
     var widgetAction: ((ChatBotWidget?)->Void)?
     var widgetResponseAction: ((String?)->Void)?
-    var widgetViewAllResponseAction: ((String?, [ChatBotWidget]?)->Void)?
+    var widgetViewAllResponseAction: ((String?, [ChatBotWidget]? , WidgetType)->Void)?
     
     private var leadingPadding: CGFloat {
         message.isFromUser ? 40 : 0
@@ -91,80 +92,69 @@ struct MessageView: View {
             .padding(.leading, leadingPadding)
             .padding(.trailing, trailingPadding)
             
-            if !getWidgetData().isEmpty {
-                
-                let widgetData = getWidgetData()
-                let widgetType = getWidgetType()
-                
-                switch widgetType {
-                case .cardView:
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        LazyHStack(spacing: 12) {
-                            ForEach(widgetData, id: \.self) { widget in
-                                WidgetView(
-                                    appTheme: appTheme,
-                                    widgetData: widget,
-                                    gptUIPreference: gptUIPreference
-                                ) { widget in
-                                    widgetAction?(widget)
-                                }
-                                .padding(.vertical, 4)
-                            }
-                        }
-                    }
-                    .customContentMargins(leading: 65, trailing: 16)
-                case .responseView:
-                    if !getRepliedStatusToSuggestions() {
-                        ScrollView(.horizontal, showsIndicators: false) {
-                            LazyHStack(spacing: 12) {
-                                
-                                // Loop through the first 3 widgets
-                                ForEach(widgetData.prefix(3), id: \.self) { widget in
-                                    Button {
-                                        widgetResponseAction?(widget.actionText)
-                                    } label: {
-                                        Text(widget.actionText ?? "")
-                                            .padding(.vertical, 8)
-                                            .padding(.horizontal, 16)
-                                            .font(.system(size: 14))
-                                            .foregroundColor(Color(hex: gptUIPreference?.primaryColor ?? ""))
-                                            .overlay {
-                                                getButtonOverlay(color: Color(hex: gptUIPreference?.primaryColor ?? ""))
-                                            }
-                                            .padding(.vertical, 4)
-                                    }
-                                    .buttonStyle(AnimatedButtonStyle())
-                                }
-                                
-                                // Add "View All" button
-                                Button {
-                                    widgetViewAllResponseAction?("", widgetData)
-                                } label: {
-                                    Text("View All")
-                                        .padding(.vertical, 8)
-                                        .padding(.horizontal, 16)
-                                        .font(.system(size: 14))
-                                        .foregroundColor(.white)
-                                        .overlay {
-                                            getButtonOverlay(isDashed: true, color: Color.white.opacity(0.5))
-                                        }
-                                        .padding(.vertical, 4)
-                                }
-                                .buttonStyle(AnimatedButtonStyle())
-                                
-                            }//: LazyHStack
-                        }
-                        .customContentMargins(leading: 65, trailing: 16)
-                    }
-                case nil:
-                    AnyView(EmptyView())
-                }
-                
-            }
+            handleWidgets()
             
         } //: VSTACK
     }//: BODY
     
+    
+    // MARK: - FUNCTIONS
+    
+    private func handleWidgets() -> some View {
+        if !getWidgetData().isEmpty {
+            
+            let widgetData = getWidgetData()
+            let widgetType = getWidgetType()
+            
+            switch widgetType {
+            case .cardView:
+                
+                return AnyView(
+                    CardWidgetView(
+                        widgetData: widgetData,
+                        appTheme: appTheme,
+                        gptUIPreference: gptUIPreference,
+                        widgetAction: { widgetData in
+                            widgetAction?(widgetData)
+                        },
+                        widgetViewAllResponseAction: { title, widgetData, widgetType in
+                            widgetViewAllResponseAction?(title, widgetData, widgetType)
+                        }
+                    )
+                )
+
+            case .responseView:
+                return AnyView(
+                    ResponseWidgetView(
+                        widgetData: widgetData,
+                        appTheme: appTheme,
+                        gptUIPreference: gptUIPreference,
+                        isReplied: getRepliedStatusToSuggestions(),
+                        widgetResponseAction: { reply in
+                            widgetResponseAction?(reply)
+                        },
+                        widgetViewAllResponseAction: { title, widgetData, widgetType in
+                            widgetViewAllResponseAction?(title, widgetData, widgetType)
+                        }
+                    )
+                )
+            default:
+                return AnyView(EmptyView())
+            }
+            
+        }
+        return AnyView(EmptyView())
+    }
+    
+    func getRepliedStatusToSuggestions() -> Bool {
+        
+        guard let widgetData = message.messageData?.widgetData, !widgetData.isEmpty else {
+            return false
+        }
+        
+        return widgetData.first?.repliedStatusToSuggestions ?? false
+        
+    }
     
     func getLoaderFilePath() -> String {
         
@@ -193,16 +183,6 @@ struct MessageView: View {
         
         let widgetTypeString = widgetData.first?.type ?? ""
         return WidgetType(rawValue: widgetTypeString)
-        
-    }
-    
-    func getRepliedStatusToSuggestions() -> Bool {
-        
-        guard let widgetData = message.messageData?.widgetData, !widgetData.isEmpty else {
-            return false
-        }
-        
-        return widgetData.first?.repliedStatusToSuggestions ?? false
         
     }
     

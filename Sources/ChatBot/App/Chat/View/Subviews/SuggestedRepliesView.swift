@@ -31,7 +31,7 @@ struct SuggestedRepliesView: View {
                         .font(.system(size: 14))
                         .foregroundColor(Color(hex: uiPreference?.primaryColor ?? ""))
                         .overlay {
-                            getButtonOverlay(color: Color(hex: uiPreference?.primaryColor ?? ""))
+                            getButtonOverlay(borderColor: Color(hex: uiPreference?.primaryColor ?? ""))
                         }
                         .padding(.top, 8)
                 }
