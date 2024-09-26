@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct ResponseWidgetView: View {
+struct WidgetResponseListView: View {
     
     // MARK: - PROPERTIES
     

@@ -110,7 +110,7 @@ struct MessageView: View {
             case .cardView:
                 
                 return AnyView(
-                    CardWidgetView(
+                    WidgetCardListView(
                         widgetData: widgetData,
                         appTheme: appTheme,
                         gptUIPreference: gptUIPreference,
@@ -125,7 +125,7 @@ struct MessageView: View {
 
             case .responseView:
                 return AnyView(
-                    ResponseWidgetView(
+                    WidgetResponseListView(
                         widgetData: widgetData,
                         appTheme: appTheme,
                         gptUIPreference: gptUIPreference,

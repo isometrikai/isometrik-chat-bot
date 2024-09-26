@@ -10,9 +10,12 @@ import SwiftUI
 struct LoaderView: View {
     
     // MARK: - PROPERTIES
+    var colorScheme: AppColorScheme
+    var appConfig: AppConfigurationManager
     
     @State private var currentTaglineIndex = 0
     @State private var animateText = false
+    
     let tagLines = [
         "Building your personalized chat experience...",
         "Loading your smart conversation space...",
@@ -34,6 +37,7 @@ struct LoaderView: View {
                 .onAppear {
                     startTaglineRotation()
                 }
+                .foregroundColor(appConfig.appTheme.theme.colors.primaryColor(for: colorScheme))
         }
     }
     
@@ -53,8 +57,4 @@ struct LoaderView: View {
         }
     }
     
-}
-
-#Preview {
-    LoaderView()
 }

@@ -2,7 +2,7 @@
 
 import SwiftUI
 
-struct WidgetResponseOptionsView: View {
+struct WidgetResponseOptionsDrawerView: View {
     
     // MARK: - PROPERTIES
     
@@ -13,6 +13,8 @@ struct WidgetResponseOptionsView: View {
     var appTheme: AppTheme
     var gptUIPreference: MyGptUIPreferences?
     var responseCallback: ((String?)->Void)?
+    
+    // MARK: - BODY
     
     var body: some View {
         

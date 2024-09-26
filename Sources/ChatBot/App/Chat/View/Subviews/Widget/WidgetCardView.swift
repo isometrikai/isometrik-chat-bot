@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct WidgetView: View {
+struct WidgetCardView: View {
     
     // MARK: - PROPERTIES
     @Environment(\.customScheme) var colorScheme
@@ -25,12 +25,13 @@ struct WidgetView: View {
                     Rectangle()
                         .fill(Color.gray.opacity(0.2))
                     URLImageView(url: URL(string: widgetData?.imageURL ?? "") ?? URL(string: "https://i.sstatic.net/frlIf.png"))
-                        .scaledToFit()
+                        .scaledToFill()
                         .clipped()
                 }
                 getSupportedOrderTypeViews(orderType: widgetData?.supportedOrderTypes ?? 0)
             }
-            .frame(width: 250, height: 120)
+            .frame(maxWidth: .infinity, maxHeight: 150.0)
+            .clipped()
             VStack(alignment: .leading) {
                 Text(widgetData?.title ?? "")
                     .foregroundColor(colorScheme == .dark ? .white : .black)
@@ -44,6 +45,7 @@ struct WidgetView: View {
                     .foregroundColor(colorScheme == .dark ? .white : .black)
                     .font(.system(size: 14))
                     .padding(EdgeInsets(top: 12, leading: 0, bottom: 0, trailing: 0))
+                Spacer()
                 if widgetData?.buttontext != nil {
                     Button {
                         widgetTappedAction?(widgetData)
@@ -69,7 +71,7 @@ struct WidgetView: View {
             .padding(.horizontal, 8)
             .padding(.vertical, 8)
         }
-        .frame(width: 250, height: 250)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(appTheme.theme.colors.primaryBackgroundColor(for: colorScheme))
         .cornerRadius(6)
         .overlay(
@@ -85,7 +87,7 @@ struct WidgetView: View {
         let price = widgetData?.price ?? ""
         let averageCost = widgetData?.averageCost ?? 0
         let currencyCode = widgetData?.currencyCode ?? ""
-        let averageRating = widgetData?.averageRating ?? 0
+        let averageRating = String(format: "%.1f", widgetData?.averageRating ?? 0)
         
         if averageCost != 0 {
             return "\(averageRating) ⭐ • \(currencyCode) \(averageCost) for two"

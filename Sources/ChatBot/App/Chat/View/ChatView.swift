@@ -23,6 +23,7 @@ struct ChatView: View {
     @State private var showDismissPopup = false
     @State private var showAlertForResetingSession: Bool = false
     @State private var showViewAllWidgetForResponseOptions: Bool = false
+    @State private var showViewAllWidgetForCard: Bool = false
     
     private var isTrailingActionEnabled: Binding<Bool> {
         Binding(
@@ -102,7 +103,7 @@ struct ChatView: View {
                 }
             }
             .sheet(isPresented: $showViewAllWidgetForResponseOptions) {
-                WidgetResponseOptionsView(
+                WidgetResponseOptionsDrawerView(
                     title: viewModel.widgetResponseSheetTitle,
                     widgetData: viewModel.widgetResponseOptions,
                     appTheme: viewModel.appConfigurations.appTheme,
@@ -111,6 +112,18 @@ struct ChatView: View {
                 )
                 .presentationDetents([.fraction(0.7)])
             }
+            .sheet(isPresented: $showViewAllWidgetForCard) {
+                WidgetCardDrawerView(
+                    title: viewModel.widgetResponseSheetTitle,
+                    widgetData: viewModel.widgetResponseOptions,
+                    appTheme: viewModel.appConfigurations.appTheme,
+                    gptUIPreference: viewModel.myGptSessionData?.data?.first?.uiPreferences,
+                    responseCallback: handleWidgetAction
+                )
+                .presentationDetents([.fraction(0.7)])
+            }
+            
+            
         }
         
     }
@@ -165,7 +178,10 @@ struct ChatView: View {
         
         switch widgetType {
         case .cardView:
-            // need to handle view all for restraunt or dish view
+            viewModel.widgetResponseOptions = widgets
+            viewModel.widgetResponseSheetTitle = title
+            showViewAllWidgetForCard = true
+            HapticFeedbackManager.shared.triggerImpact(style: .heavy)
             break
         case .responseView:
             viewModel.widgetResponseOptions = widgets

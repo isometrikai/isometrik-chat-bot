@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct CardWidgetView: View {
+struct WidgetCardListView: View {
     
     // MARK: - PROPERTIES
     
@@ -27,13 +27,14 @@ struct CardWidgetView: View {
                 
                 // Loop through the first 3 widgets
                 ForEach(widgetData.prefix(3), id: \.self) { widget in
-                    WidgetView(
+                    WidgetCardView(
                         appTheme: appTheme,
                         widgetData: widget,
                         gptUIPreference: gptUIPreference
                     ) { widget in
                         widgetAction?(widget)
                     }
+                    .frame(width: 250)
                     .padding(.vertical, 4)
                 }
                 
@@ -44,16 +45,14 @@ struct CardWidgetView: View {
                     } label: {
                         ZStack(alignment: .center) {
                             VStack(alignment: .center) {
-                                Text("+\(widgetData.count - 3)")
-                                    .font(.system(size: 18))
-                                    .foregroundColor(Color(uiColor: UIColor(hex: gptUIPreference?.primaryColor ?? "")))
-                                Text("View More")
+                                Text("+\(widgetData.count - 3) View More")
                                     .font(.system(size: 14))
                                     .foregroundColor(Color(uiColor: UIColor(hex: gptUIPreference?.primaryColor ?? "")))
                                     .underline()
                             }
                         }
-                        .frame(width: 150, height: 250)
+                        .frame(maxHeight: .infinity)
+                        .frame(width: 120)
                         .background(Color(uiColor: UIColor(hex: gptUIPreference?.primaryColor ?? "").withAlphaComponent(0.1)))
                         .cornerRadius(6)
                         

@@ -11,7 +11,7 @@ public struct LaunchView: View {
     
     // MARK: - PROPERTIES
     
-    @State private var colorScheme: AppColorScheme = .light
+    @State private var colorScheme: AppColorScheme = .dark
     @StateObject public var viewModel: LaunchViewModel
     @State private var scaleEffect: Bool = false
     @State private var isLoading: Bool = true
@@ -33,7 +33,7 @@ public struct LaunchView: View {
                     .edgesIgnoringSafeArea(.all)
                 VStack {
                     if isLoading {
-                        LoaderView()
+                        LoaderView(colorScheme: colorScheme, appConfig: viewModel.appConfigurations)
                     } else {
                         NavigationLink(value: navigateToChatView) {
                             viewModel.appConfigurations.appTheme.theme.images.appLogo
