@@ -89,6 +89,6 @@ struct MessageToolBarView: View {
                 }
             }
         }
-        .frame(height: 60)
+        .frame(height: 60) 
     }
 }

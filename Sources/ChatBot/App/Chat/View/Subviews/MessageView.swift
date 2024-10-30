@@ -48,10 +48,15 @@ struct MessageView: View {
                         Circle()
                             .fill(colorScheme == .dark ? Color.white.opacity(0.1) : Color.black.opacity(0.1))
                             .frame(width: 40, height: 40)
-                        URLImageView(url: URL(string: chatBotImageUrl)!)
-                            .scaledToFill()
-                            .frame(width: 40, height: 40)
-                            .clipShape(Circle())
+                        
+                        if let url = URL(string: chatBotImageUrl) {
+                            URLImageView(url: url)
+                                .scaledToFill()
+                                .frame(width: 40, height: 40)
+                                .clipShape(Circle())
+                        } else {
+                            AnyView(EmptyView())
+                        }
                     }
                     
                     if message.isResponding {
@@ -76,7 +81,7 @@ struct MessageView: View {
                             .padding(12)
                             .background(Color(uiColor: UIColor(hex: "\(gptUIPreference?.botBubbleColor ?? "#F6F6F6")")))
                             .clipShape(RoundedCorner(topLeft: 8, topRight: 8, bottomLeft: 0, bottomRight: 8))
-                            .foregroundColor(Color(uiColor: UIColor(hex: "\(gptUIPreference?.botBubbleFontColor ?? "#F6F6F6")")))
+                            .foregroundColor(Color(uiColor: UIColor(hex: "\(gptUIPreference?.botBubbleFontColor ?? "#181818")")))
                             .font(.custom("\(gptUIPreference?.fontStyle ?? "")", size: 14))
                             .overlay {
                                 RoundedCorner(topLeft: 8, topRight: 8, bottomLeft: 0, bottomRight: 8)

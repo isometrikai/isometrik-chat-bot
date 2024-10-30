@@ -20,6 +20,7 @@ struct WidgetCardView: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
+            
             ZStack(alignment: .bottomTrailing) {
                 ZStack(alignment: .center) {
                     Rectangle()
@@ -28,17 +29,19 @@ struct WidgetCardView: View {
                         .scaledToFill()
                         .clipped()
                 }
+                .frame(height: 150)
                 getSupportedOrderTypeViews(orderType: widgetData?.supportedOrderTypes ?? 0)
             }
-            .frame(maxWidth: .infinity, maxHeight: 150.0)
+            .frame(maxWidth: .infinity)
             .clipped()
+            
             VStack(alignment: .leading) {
-                Text(widgetData?.title ?? "")
+                Text(widgetData?.title ?? "title")
                     .foregroundColor(colorScheme == .dark ? .white : .black)
                     .font(.system(size: 14))
                     .multilineTextAlignment(.leading)
                     .lineLimit(2)
-                Text(widgetData?.subtitle ?? "")
+                Text(widgetData?.subtitle ?? "subtitle")
                     .font(.system(size: 12))
                     .foregroundColor(Color(uiColor: UIColor(hex: "#94A0AF")))
                 Text(getDescriptionText())
@@ -47,29 +50,13 @@ struct WidgetCardView: View {
                     .padding(EdgeInsets(top: 12, leading: 0, bottom: 0, trailing: 0))
                 Spacer()
                 if widgetData?.buttontext != nil {
-                    Button {
-                        widgetTappedAction?(widgetData)
-                    } label: {
-                        HStack {
-                            Spacer()
-                            Text(widgetData?.buttontext ?? "")
-                                .font(.system(size: 14))
-                                .foregroundColor(Color(uiColor: UIColor(hex: gptUIPreference?.primaryColor ?? "")))
-                            Spacer()
-                        }
-                        .padding(.vertical, 10)
-                        .padding(.horizontal, 16)
-                        .overlay {
-                            getButtonOverlay(borderColor: .clear, backgroundColor: Color(uiColor: UIColor(hex: gptUIPreference?.primaryColor ?? "").withAlphaComponent(0.1)), radius: 6)
-                        }
-                    }
-                    .cornerRadius(6)
-                    .buttonStyle(AnimatedButtonStyle())
-                    .contentShape(Rectangle()) // This increases the tappable area to the size of the button content
+                    self.getActionButton()
                 }
+//                self.getActionButton()
             }
             .padding(.horizontal, 8)
             .padding(.vertical, 8)
+            
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(appTheme.theme.colors.primaryBackgroundColor(for: colorScheme))
@@ -84,9 +71,9 @@ struct WidgetCardView: View {
     // MARK: - FUNCTIONS
                          
     func getDescriptionText() -> String {
-        let price = widgetData?.price ?? ""
-        let averageCost = widgetData?.averageCost ?? 0
-        let currencyCode = widgetData?.currencyCode ?? ""
+        let price = widgetData?.price ?? "0.0"
+        let averageCost = widgetData?.averageCost ?? 4
+        let currencyCode = widgetData?.currencyCode ?? "AED"
         let averageRating = String(format: "%.1f", widgetData?.averageRating ?? 0)
         
         if averageCost != 0 {
@@ -142,4 +129,41 @@ struct WidgetCardView: View {
         
     }
     
+    func getActionButton() -> some View {
+        return AnyView(
+            Button {
+                widgetTappedAction?(widgetData)
+            } label: {
+                HStack {
+                    Spacer()
+                    Text(widgetData?.buttontext ?? "order now")
+                        .font(.system(size: 14))
+                        .foregroundColor(Color(uiColor: UIColor(hex: gptUIPreference?.primaryColor ?? "")))
+                    Spacer()
+                }
+                .padding(.vertical, 10)
+                .padding(.horizontal, 16)
+                .overlay {
+                    getButtonOverlay(borderColor: .clear, backgroundColor: Color(uiColor: UIColor(hex: gptUIPreference?.primaryColor ?? "").withAlphaComponent(0.1)), radius: 6)
+                }
+            }
+            .cornerRadius(6)
+            .buttonStyle(AnimatedButtonStyle())
+            .contentShape(Rectangle())
+        )
+    }
+    
+}
+
+//#Preview {
+//    WidgetCardView(appTheme: AppTheme.init(theme: Theme.init()))
+//        .previewLayout(.sizeThatFits)
+//}
+
+struct WidgetCardView_Previews: PreviewProvider {
+    static var previews: some View {
+        WidgetCardView(appTheme: AppTheme(theme: Theme()))
+            .previewLayout(.sizeThatFits)
+            .frame(height: 300)
+    }
 }
