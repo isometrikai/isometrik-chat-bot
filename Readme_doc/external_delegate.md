@@ -5,7 +5,7 @@ The ChatBot SDK provides a delegate to handle actions from its responses, such a
 ```swift
 extension ViewController: ChatBotDelegate {
     
-    func navigateFromBot(withData: ChatBotWidget?, forType: WidgetType?) {
+    func navigateFromBot(withData: ChatBot.ChatBotWidget?, dismissOnSuccess: (Bool) -> ()) {
         // Implement your custom logic to handle the navigation using the provided data
     }
 }

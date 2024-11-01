@@ -68,7 +68,10 @@ class DemoViewController: UIViewController {
 
 extension DemoViewController: ChatBotDelegate {
     
-    func navigateFromBot(withData: ChatBotWidget?, forType: WidgetType?) {
+    func navigateFromBot(withData: ChatBot.ChatBotWidget?, dismissOnSuccess: (Bool) -> ()) {
+        
+        // dismissOnSuccess(true)  # call back for dismissing chatBot entirely
+        
         DispatchQueue.main.async {
             if let hostingController = self.hostingController {
                 let controller = MyViewController()
