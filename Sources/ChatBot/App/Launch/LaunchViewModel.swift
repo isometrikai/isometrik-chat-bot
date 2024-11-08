@@ -30,20 +30,16 @@ public class LaunchViewModel: ObservableObject {
     // MARK: - METHODS
     
     func getMyGptsContent() async throws {
-        Task {
-            do {
-                let parameters = MyGptsQueryParameter(
-                    id: appConfigurations.chatBotId
-                )
-                
-                let data = try await networkMiddleware.performRequest {
-                    return try await self.apiService.myGpts(queryParameter: parameters)
-                }
-                
-                DispatchQueue.main.async {
-                    self.myGptSessionData = data
-                }
-            }
+        let parameters = MyGptsQueryParameter(
+            id: appConfigurations.chatBotId
+        )
+        
+        let data = try await networkMiddleware.performRequest {
+            return try await self.apiService.myGpts(queryParameter: parameters)
+        }
+        
+        DispatchQueue.main.async {
+            self.myGptSessionData = data
         }
     }
     

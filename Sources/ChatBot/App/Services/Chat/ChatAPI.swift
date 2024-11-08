@@ -22,7 +22,7 @@ extension ChatAPI: APIProtocol {
     }
     
     func apiEndPath() -> String {
-        var path = "/v2"
+        var path = "/v1"
         
         switch self {
         case .GPTClientMsg:

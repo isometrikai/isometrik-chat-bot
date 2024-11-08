@@ -7,6 +7,19 @@
 
 import SwiftUI
 
+struct IdentifiableImage: Identifiable, Hashable {
+    let id = UUID()
+    let image: Image
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+    
+    static func == (lhs: IdentifiableImage, rhs: IdentifiableImage) -> Bool {
+        lhs.id == rhs.id
+    }
+}
+
 struct WidgetCardView: View {
     
     // MARK: - PROPERTIES
@@ -71,10 +84,14 @@ struct WidgetCardView: View {
     // MARK: - FUNCTIONS
                          
     func getDescriptionText() -> String {
-        let price = widgetData?.price ?? "0.0"
-        let averageCost = widgetData?.averageCost ?? 4
-        let currencyCode = widgetData?.currencyCode ?? "AED"
-        let averageRating = String(format: "%.1f", widgetData?.averageRating ?? 0)
+        guard let widget = widgetData else {
+            return "No data available"
+        }
+        
+        let price = widget.price ?? "0.0"
+        let averageCost = widget.averageCost ?? 4
+        let currencyCode = widget.currencyCode ?? "AED"
+        let averageRating = String(format: "%.1f", widget.averageRating ?? 0)
         
         if averageCost != 0 {
             return "\(averageRating) ⭐ • \(currencyCode) \(averageCost) for two"
@@ -84,50 +101,42 @@ struct WidgetCardView: View {
     }
     
     func getSupportedOrderTypeViews(orderType: Int) -> some View {
-        
         let orderTypes = SupportedOrderTypes(rawValue: orderType)
         let isTableReservation = widgetData?.tableReservations ?? false
         
+        func createOrderTypeStack(_ images: [IdentifiableImage]) -> some View {
+            HStack(spacing: 5) {
+                ForEach(images) { identifiableImage in
+                    OrderTypeView(image: identifiableImage.image)
+                }
+            }
+            .padding(.vertical, orderTypes == .both ? 8 : 5)
+            .padding(.horizontal, orderTypes == .both ? 8 : 10)
+        }
+        
+        var images: [IdentifiableImage] = []
+        
         switch orderTypes {
         case .delivery:
-            return AnyView(
-                HStack(spacing: 5) {
-                    OrderTypeView(image: appTheme.theme.images.storeDelivery)
-                    if isTableReservation {
-                        OrderTypeView(image: appTheme.theme.images.storeDinein)
-                    }
-                }
-                .padding(.vertical, 5)
-                .padding(.horizontal, 10)
-            )
+            images.append(IdentifiableImage(image: appTheme.theme.images.storeDelivery))
         case .selfPickup:
-            return AnyView(
-                HStack(spacing: 5) {
-                    OrderTypeView(image: appTheme.theme.images.storePickup)
-                    if isTableReservation {
-                        OrderTypeView(image: appTheme.theme.images.storeDinein)
-                    }
-                }
-                .padding(.vertical, 5)
-                .padding(.horizontal, 10)
-            )
+            images.append(IdentifiableImage(image: appTheme.theme.images.storePickup))
         case .both:
-            return AnyView(
-                HStack(spacing: 5) {
-                    OrderTypeView(image: appTheme.theme.images.storePickup)
-                    OrderTypeView(image: appTheme.theme.images.storeDelivery)
-                    if isTableReservation {
-                        OrderTypeView(image: appTheme.theme.images.storeDinein)
-                    }
-                }
-                .padding(.vertical, 8)
-                .padding(.horizontal, 8)
-            )
+            images.append(contentsOf: [
+                IdentifiableImage(image: appTheme.theme.images.storePickup),
+                IdentifiableImage(image: appTheme.theme.images.storeDelivery)
+            ])
         default:
             return AnyView(Circle().fill(.clear).frame(width: .zero, height: .zero))
         }
         
+        if isTableReservation {
+            images.append(IdentifiableImage(image: appTheme.theme.images.storeDinein))
+        }
+        
+        return AnyView(createOrderTypeStack(images))
     }
+
     
     func getActionButton() -> some View {
         return AnyView(
@@ -136,7 +145,7 @@ struct WidgetCardView: View {
             } label: {
                 HStack {
                     Spacer()
-                    Text(widgetData?.buttontext ?? "order now")
+                    Text(widgetData?.buttontext ?? "order now") // Fixed this line
                         .font(.system(size: 14))
                         .foregroundColor(Color(uiColor: UIColor(hex: gptUIPreference?.primaryColor ?? "")))
                     Spacer()
