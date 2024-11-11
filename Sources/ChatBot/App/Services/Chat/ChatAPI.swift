@@ -39,7 +39,7 @@ extension ChatAPI: APIProtocol {
     }
     
     func additionalHeader() -> [String : String] {
-        if let accessToken = UserDefaultsManager.getValue(forKey: UserDefaultKey.accessToken.rawValue) {
+        if let accessToken = ISMChatBotUserDefaultsManager.getValue(forKey: ISMChatBotUserDefaultKey.accessToken.rawValue) {
             return [
                 "Authorization": "\(accessToken)"
             ]

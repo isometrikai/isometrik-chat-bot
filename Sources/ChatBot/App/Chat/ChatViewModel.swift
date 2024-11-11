@@ -27,6 +27,7 @@ public class ChatViewModel: ObservableObject {
     var delegate: ChatBotDelegate?
     var myGptSessionData: MyGptsResponseModel?
     var sessionId: String
+    var withReply: String?
     private var sendMessageTask: Task<(), Never>?
     
     @Published var messages: [CustomMessageModel] = []
@@ -44,7 +45,8 @@ public class ChatViewModel: ObservableObject {
         appConfig: AppConfigurationManager,
         delegate: ChatBotDelegate? = nil,
         myGptSessionData: MyGptsResponseModel? = nil,
-        sessionId: String = "\(Int(Date().timeIntervalSince1970))"
+        sessionId: String = "\(Int(Date().timeIntervalSince1970))",
+        withReply: String? = nil
     ) {
         self.apiService = apiService
         self.myGptSessionData = myGptSessionData
@@ -52,6 +54,7 @@ public class ChatViewModel: ObservableObject {
         self.appConfigurations = appConfig
         self.networkMiddleware = NetworkMiddleware(appConfig: appConfig)
         self.sessionId = ChatViewModel.getHashedSessionId(id: sessionId)
+        self.withReply = withReply
     }
     
     // MARK: - METHODS

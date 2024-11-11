@@ -60,7 +60,7 @@ final class NetworkMiddleware {
                 return false
             }
             
-            UserDefaultsManager.setValue(accessToken, forKey: UserDefaultKey.accessToken.rawValue)
+            ISMChatBotUserDefaultsManager.setValue(accessToken, forKey: ISMChatBotUserDefaultKey.accessToken.rawValue)
             
             return true
             

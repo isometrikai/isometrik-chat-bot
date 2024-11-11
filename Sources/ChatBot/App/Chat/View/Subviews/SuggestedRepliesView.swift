@@ -13,15 +13,16 @@ struct SuggestedRepliesView: View {
     
     var replies: [String] = []
     var uiPreference: MyGptUIPreferences?
+    var alignment: HorizontalAlignment = .leading
+    var backgroundColor: Color = .clear
     var replyAction: (String) -> Void
     
     
     // MARK: - BODY
     
     var body: some View {
-        LazyVStack(alignment: .leading, spacing: 0) {
+        LazyVStack(alignment: alignment, spacing: 0) {
             ForEach(replies, id: \.self) { reply in
-                
                 Button {
                     replyAction(reply)
                 } label: {
@@ -33,7 +34,13 @@ struct SuggestedRepliesView: View {
                         .overlay {
                             getButtonOverlay(borderColor: Color(hex: uiPreference?.primaryColor ?? ""))
                         }
+                        .background(
+                            Rectangle()
+                                .fill(backgroundColor)
+                                .cornerRadius(25)
+                        )
                         .padding(.top, 8)
+                        
                 }
                 .buttonStyle(AnimatedButtonStyle())
             }

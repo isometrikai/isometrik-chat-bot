@@ -122,7 +122,11 @@ struct ChatView: View {
                 )
                 .presentationDetents([.fraction(0.7)])
             }
-            
+            .onAppear {
+                if let reply = viewModel.withReply, !reply.isEmpty {
+                    sendMessage(message: reply)
+                }
+            }
             
         }
         

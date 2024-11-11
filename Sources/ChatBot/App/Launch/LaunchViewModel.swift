@@ -19,6 +19,9 @@ public class LaunchViewModel: ObservableObject {
     private let apiService: ChatAPIService = ChatNetworkService()
     private let networkMiddleware: NetworkMiddleware
     
+    public var withReply: String? = nil
+    public var floatingActionCallback: (() -> Void)?
+    
     // MARK: - INITIALIZER
     
     public init(appConfigurations: AppConfigurationManager, delegate: ChatBotDelegate){

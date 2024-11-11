@@ -7,11 +7,12 @@
 
 import Foundation
 
-public enum UserDefaultKey: String {
+public enum ISMChatBotUserDefaultKey: String {
     case accessToken = "access_token"
+    case userInteractedWithChatBot = "user_interacted_with_chatbot"
 }
 
-public struct UserDefaultsManager {
+public struct ISMChatBotUserDefaultsManager {
     
     private static let userDefaults = UserDefaults.standard
     
@@ -26,6 +27,12 @@ public struct UserDefaultsManager {
     
     public static func removeValue(forKey key: String) {
         userDefaults.removeObject(forKey: key)
+        userDefaults.synchronize()
+    }
+    
+    public static func resetAllDefaults() {
+        guard let appDomain = Bundle.main.bundleIdentifier else { return }
+        userDefaults.removePersistentDomain(forName: appDomain)
         userDefaults.synchronize()
     }
 }

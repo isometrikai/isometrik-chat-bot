@@ -11,6 +11,10 @@ public func getButtonOverlay(isDashed: Bool = false, borderColor: Color = .gray,
                     dash: isDashed ? [5, 3] : []
                 )
             )
-            .background(backgroundColor)
+            .background(
+                Rectangle()
+                    .fill(backgroundColor)
+                    .cornerRadius(25)
+            )
     }
 }

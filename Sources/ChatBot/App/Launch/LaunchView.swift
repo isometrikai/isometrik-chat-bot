@@ -51,6 +51,13 @@ public struct LaunchView: View {
             .navigationBarHidden(true)
             .onAppear {
                 scaleEffect = true
+                
+                // This means launch view is initiated from floating view along with some reply
+                if viewModel.withReply == nil {
+                    fetchGptsContent()
+                } else {
+                    navigateToChatView = true
+                }
             }
             .navigationDestination(isPresented: $navigateToChatView) {
                 
@@ -58,18 +65,17 @@ public struct LaunchView: View {
                     apiService: ChatNetworkService(),
                     appConfig: viewModel.appConfigurations,
                     delegate: self,
-                    myGptSessionData: viewModel.myGptSessionData
+                    myGptSessionData: viewModel.myGptSessionData,
+                    withReply: viewModel.withReply
                 )
                 
                 ChatView(viewModel: chatViewModel) {
                     dismissHostingController()
                 }
+                
             }
         }
         .modifier(ColorSchemeModifier(colorScheme: colorScheme))
-        .onAppear {
-            fetchGptsContent()
-        }
         .alert("Error", isPresented: $showAlert) {
             Button("go back", role: .destructive) {
                 dismissHostingController()
@@ -120,13 +126,6 @@ public struct LaunchView: View {
         print("StoreId: \(withData.storeId ?? "")")
     }
     
-    func dismissHostingController() {
-        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-              let rootViewController = windowScene.windows.first?.rootViewController else {
-            return
-        }
-        rootViewController.dismiss(animated: true, completion: nil)
-    }
 }
 
 
