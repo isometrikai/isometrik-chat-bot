@@ -39,7 +39,11 @@ public struct FloatingView: View {
                 .onTapGesture {
                     // Dismiss when tapping outside the button
                     ISMChatBotUserDefaultsManager.setValue(true, forKey: ISMChatBotUserDefaultKey.userInteractedWithChatBot.rawValue)
-                    dismissHostingController(animated: false)
+                    dismissHostingController(animated: false) {
+                        DispatchQueue.main.async {
+                            viewModel.floatingViewDismissedWithoutAction?()
+                        }
+                    }
                 }
             VStack(alignment: .trailing, spacing: 0) {
                 if viewModel.myGptSessionData != nil {

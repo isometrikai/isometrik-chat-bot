@@ -21,6 +21,7 @@ public class LaunchViewModel: ObservableObject {
     
     public var withReply: String? = nil
     public var floatingActionCallback: (() -> Void)?
+    public var floatingViewDismissedWithoutAction: (()->Void)?
     
     // MARK: - INITIALIZER
     
