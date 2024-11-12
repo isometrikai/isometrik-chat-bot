@@ -127,7 +127,6 @@ struct ChatView: View {
                     sendMessage(message: reply)
                 }
             }
-            
         }
         
     }

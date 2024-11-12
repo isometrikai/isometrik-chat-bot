@@ -71,8 +71,10 @@ public struct FloatingView: View {
                             
                             // navigate action
                             dismissHostingController(animated: false) {
-                                viewModel.withReply = reply
-                                viewModel.floatingActionCallback?()
+                                DispatchQueue.main.async {
+                                    viewModel.withReply = reply
+                                    viewModel.floatingActionCallback?()
+                                }
                             }
                         }
                         .offset(y: viewAppeared ? 0 : 20) // Scale animation
@@ -86,8 +88,10 @@ public struct FloatingView: View {
                         
                         // navigate action
                         dismissHostingController(animated: false) {
-                            viewModel.withReply = nil
-                            viewModel.floatingActionCallback?()
+                            DispatchQueue.main.async {
+                                viewModel.withReply = nil
+                                viewModel.floatingActionCallback?()
+                            }
                         }
                         
                     } label: {
