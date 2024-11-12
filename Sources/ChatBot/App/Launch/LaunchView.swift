@@ -53,11 +53,12 @@ public struct LaunchView: View {
                 scaleEffect = true
                 
                 // This means launch view is initiated from floating view along with some reply
-                if viewModel.withReply == nil {
-                    fetchGptsContent()
-                } else {
+                if viewModel.myGptSessionData != nil {
                     navigateToChatView = true
+                } else {
+                    fetchGptsContent()
                 }
+                
             }
             .navigationDestination(isPresented: $navigateToChatView) {
                 

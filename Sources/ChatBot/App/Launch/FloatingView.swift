@@ -22,6 +22,12 @@ public struct FloatingView: View {
         _viewModel = StateObject(wrappedValue: viewModel)
     }
     
+    var combinedBottomPadding: CGFloat {
+        let tabBarHeight = UIApplication.shared.windows.first?.rootViewController?.tabBarController?.tabBar.frame.height ?? 0
+        let bottomInset = UIApplication.shared.windows.first?.safeAreaInsets.bottom ?? 0
+        return tabBarHeight + bottomInset + 16  // Adding 16 for additional spacing
+    }
+    
     // MARK: - BODY
     
     public var body: some View {
@@ -30,6 +36,11 @@ public struct FloatingView: View {
                 .opacity(0.6)
                 .ignoresSafeArea(.all)
                 .opacity(viewAppeared ? 1 : 0)
+                .onTapGesture {
+                    // Dismiss when tapping outside the button
+                    ISMChatBotUserDefaultsManager.setValue(true, forKey: ISMChatBotUserDefaultKey.userInteractedWithChatBot.rawValue)
+                    dismissHostingController(animated: false)
+                }
             VStack(alignment: .trailing, spacing: 0) {
                 if viewModel.myGptSessionData != nil {
                     // welcome message bubble
@@ -111,6 +122,7 @@ public struct FloatingView: View {
                     .opacity(viewAppeared ? 1 : 0)
                 }
                 .padding(.top, 12)
+                .padding(.bottom, combinedBottomPadding)
             }
             .padding(.horizontal, 16)
         }
