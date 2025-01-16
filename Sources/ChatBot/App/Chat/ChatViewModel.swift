@@ -71,7 +71,7 @@ public class ChatViewModel: ObservableObject {
         sendMessageTask = Task {
             do {
                 let parameters = GPTClientRequestParameters(
-                    chatBotId: 188,
+                    chatBotId: Int(appConfigurations.chatBotId) ?? 0,
                     message: message,
                     sessionId: sessionId,
                     storeCategoryId: appConfigurations.storeCategoryId,
