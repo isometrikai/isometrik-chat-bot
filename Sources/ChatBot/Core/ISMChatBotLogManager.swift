@@ -1,9 +1,9 @@
 import Foundation
 import os.log
 
-public struct LogTrackingData {
+public struct ISMChatBotLogTrackingData {
     let eventName: String
-    let eventParameters: [String: String]
+    public var eventParameters: [String: String] // public as we can add more parametes externaly
     let status: Int
 }
 
@@ -15,7 +15,7 @@ final public class ISMChatBotLogManager {
     private let networkCategory = "Network"
     
     // Closure to handle log forwarding to the app
-    public var forwardLogs: ((LogTrackingData) -> Void)?
+    public var forwardLogs: ((ISMChatBotLogTrackingData) -> Void)?
 
     private init() {
         self.subsystem = "com.isometrik.chatbot"
@@ -80,12 +80,15 @@ extension ISMChatBotLogManager {
         let token = request.allHTTPHeaderFields?["Authorization"] ?? "no_auth_token"
         let httpMethod = request.httpMethod ?? "no_method"
         
+        // Extract last 8 characters of token
+        let tokenLast8 = token.suffix(8)
+        
         let param: [String: String] = [
-            "token": "\(token)",
+            "token": "..\(tokenLast8)",
             "httpMethod": "\(httpMethod)",
         ]
         
-        forwardLogs?(LogTrackingData(eventName: eventName, eventParameters: param, status: status))
+        forwardLogs?(ISMChatBotLogTrackingData(eventName: eventName, eventParameters: param, status: status))
     }
     
     func logFailureEvents(request: URLRequest, status: Int, data: Data) {
@@ -98,21 +101,24 @@ extension ISMChatBotLogManager {
         
         // parse the data for error message
         let errorMsg: String
-            if let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
-               let message = json["message"] as? String {
-                errorMsg = message
-            } else {
-                errorMsg = "Unknown error"
-            }
+        if let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
+           let message = json["message"] as? String {
+            errorMsg = message
+        } else {
+            errorMsg = "Unknown error"
+        }
+        
+        // Extract last 8 characters of token
+        let tokenLast8 = token.suffix(8)
         
         let param: [String: String] = [
-            "token": "\(token)",
+            "token": "..\(tokenLast8)",
             "httpMethod": "\(httpMethod)",
             "error": "\(errorMsg)"
         ]
         
         
-        forwardLogs?(LogTrackingData(eventName: eventName, eventParameters: param, status: status))
+        forwardLogs?(ISMChatBotLogTrackingData(eventName: eventName, eventParameters: param, status: status))
     }
     
 }
