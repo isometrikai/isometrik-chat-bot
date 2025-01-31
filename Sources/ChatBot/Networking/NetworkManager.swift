@@ -72,15 +72,19 @@ public class NetworkManager: NetworkManagable {
         do {
             let (data, response) = try await URLSession.shared.data(for: request, delegate: nil)
             guard let response = response as? HTTPURLResponse else {
+                ISMChatBotLogManager.shared.logFailureEvents(request: request, status: 0, data: data)
                 throw NetworkError.noResponse
             }
 
             switch response.statusCode {
             case 200 ... 299:
+                ISMChatBotLogManager.shared.logSuccessEvents(request: request, status: response.statusCode)
                 return data
             case 400, 401, 406:
+                ISMChatBotLogManager.shared.logFailureEvents(request: request, status: response.statusCode, data: data)
                 throw NetworkError.unauthorized
             default:
+                ISMChatBotLogManager.shared.logFailureEvents(request: request, status: response.statusCode, data: data)
                 throw NetworkError.unknown
             }
         } catch let error as URLError where error.code == .timedOut {

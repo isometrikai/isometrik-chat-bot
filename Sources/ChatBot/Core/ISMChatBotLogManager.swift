@@ -1,6 +1,12 @@
 import Foundation
 import os.log
 
+public struct LogTrackingData {
+    let eventName: String
+    let eventParameters: [String: String]
+    let status: Int
+}
+
 final public class ISMChatBotLogManager {
     public static let shared = ISMChatBotLogManager()
 
@@ -9,7 +15,7 @@ final public class ISMChatBotLogManager {
     private let networkCategory = "Network"
     
     // Closure to handle log forwarding to the app
-    public var appLogHandler: ((String) -> Void)?
+    public var forwardLogs: ((LogTrackingData) -> Void)?
 
     private init() {
         self.subsystem = "com.isometrik.chatbot"
@@ -35,12 +41,6 @@ final public class ISMChatBotLogManager {
     
     public func logCustom(category: String, message: String, type: OSLogType = .default, file: String = #file, line: Int = #line) {
         os_log("%{public}@", log: logger(for: category), type: type, formattedMessage(message, type: type, file: file, line: line))
-    }
-    
-    // Forward log to the app's log handler
-    private func forwardLog(_ message: String) {
-        // Check if there’s a handler set (app-side can handle the logs)
-        appLogHandler?(message)
     }
 
     // Define the prefixes for each log type
@@ -68,4 +68,51 @@ private extension OSLogType {
             return "DEFAULT"
         }
     }
+}
+
+extension ISMChatBotLogManager {
+    
+    func logSuccessEvents(request: URLRequest, status: Int) {
+        
+        let endpoint = request.url?.path ?? "no_endpoint"
+        let eventName = "success_\(endpoint)"
+        
+        let token = request.allHTTPHeaderFields?["Authorization"] ?? "no_auth_token"
+        let httpMethod = request.httpMethod ?? "no_method"
+        
+        let param: [String: String] = [
+            "token": "\(token)",
+            "httpMethod": "\(httpMethod)",
+        ]
+        
+        forwardLogs?(LogTrackingData(eventName: eventName, eventParameters: param, status: status))
+    }
+    
+    func logFailureEvents(request: URLRequest, status: Int, data: Data) {
+        
+        let endpoint = request.url?.path ?? "no_endpoint"
+        let eventName = "failure_\(endpoint)"
+        
+        let token = request.allHTTPHeaderFields?["Authorization"] ?? "no_auth_token"
+        let httpMethod = request.httpMethod ?? "no_method"
+        
+        // parse the data for error message
+        let errorMsg: String
+            if let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
+               let message = json["message"] as? String {
+                errorMsg = message
+            } else {
+                errorMsg = "Unknown error"
+            }
+        
+        let param: [String: String] = [
+            "token": "\(token)",
+            "httpMethod": "\(httpMethod)",
+            "error": "\(errorMsg)"
+        ]
+        
+        
+        forwardLogs?(LogTrackingData(eventName: eventName, eventParameters: param, status: status))
+    }
+    
 }
