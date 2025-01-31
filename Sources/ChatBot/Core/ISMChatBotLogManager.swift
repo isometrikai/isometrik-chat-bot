@@ -1,12 +1,15 @@
 import Foundation
 import os.log
 
-final public class LogManager {
-    public static let shared = LogManager()
+final public class ISMChatBotLogManager {
+    public static let shared = ISMChatBotLogManager()
 
     private let subsystem: String
     private let generalCategory = "General"
     private let networkCategory = "Network"
+    
+    // Closure to handle log forwarding to the app
+    public var appLogHandler: ((String) -> Void)?
 
     private init() {
         self.subsystem = "com.isometrik.chatbot"
@@ -17,7 +20,7 @@ final public class LogManager {
     }
 
     private func formattedMessage(_ message: String, type: OSLogType, file: String, line: Int) -> String {
-        let prefix = LogManager.prefixes[type.rawValue] ?? ""
+        let prefix = ISMChatBotLogManager.prefixes[type.rawValue] ?? ""
         let fileName = (file as NSString).lastPathComponent
         return "\(prefix) [\(type.description)] [\(fileName):\(line)] > \(message)"
     }
@@ -32,6 +35,12 @@ final public class LogManager {
     
     public func logCustom(category: String, message: String, type: OSLogType = .default, file: String = #file, line: Int = #line) {
         os_log("%{public}@", log: logger(for: category), type: type, formattedMessage(message, type: type, file: file, line: line))
+    }
+    
+    // Forward log to the app's log handler
+    private func forwardLog(_ message: String) {
+        // Check if there’s a handler set (app-side can handle the logs)
+        appLogHandler?(message)
     }
 
     // Define the prefixes for each log type

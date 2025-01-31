@@ -39,7 +39,7 @@ final class NetworkMiddleware {
     }
     
     private func logError(_ message: String) {
-        LogManager.shared.logNetwork(message, type: .error)
+        ISMChatBotLogManager.shared.logNetwork(message, type: .error)
     }
     
     private func handleUnauthorizedError() async -> Bool {
