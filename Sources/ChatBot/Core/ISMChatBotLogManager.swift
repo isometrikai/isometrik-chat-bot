@@ -2,9 +2,9 @@ import Foundation
 import os.log
 
 public struct ISMChatBotLogTrackingData {
-    let eventName: String
-    public var eventParameters: [String: String] // public as we can add more parametes externaly
-    let status: Int
+    public let eventName: String
+    public var eventParameters: [String: String] // `mutable` as we can add more parametes externaly
+    public let status: Int
 }
 
 final public class ISMChatBotLogManager {
