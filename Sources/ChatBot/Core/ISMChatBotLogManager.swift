@@ -1,10 +1,16 @@
 import Foundation
 import os.log
 
+public enum ISMChatBotLogType {
+    case success
+    case failure
+}
+
 public struct ISMChatBotLogTrackingData {
     public let eventName: String
     public var eventParameters: [String: String] // `mutable` as we can add more parametes externaly
     public let status: Int
+    public let logType: ISMChatBotLogType
 }
 
 final public class ISMChatBotLogManager {
@@ -110,7 +116,7 @@ extension ISMChatBotLogManager {
             }
         }
         
-        forwardedLogs?(ISMChatBotLogTrackingData(eventName: eventName, eventParameters: param, status: status))
+        forwardedLogs?(ISMChatBotLogTrackingData(eventName: eventName, eventParameters: param, status: status, logType: .success))
     }
     
     func logFailureEvents(request: URLRequest, status: Int, data: Data) {
@@ -140,7 +146,7 @@ extension ISMChatBotLogManager {
             "error": "\(errorMsg)"
         ]
         
-        forwardedLogs?(ISMChatBotLogTrackingData(eventName: eventName, eventParameters: param, status: status))
+        forwardedLogs?(ISMChatBotLogTrackingData(eventName: eventName, eventParameters: param, status: status, logType: .failure))
     }
     
 }
