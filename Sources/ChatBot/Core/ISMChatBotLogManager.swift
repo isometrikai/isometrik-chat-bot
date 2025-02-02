@@ -15,7 +15,7 @@ final public class ISMChatBotLogManager {
     private let networkCategory = "Network"
     
     // Closure to handle log forwarding to the app
-    public var forwardLogs: ((ISMChatBotLogTrackingData) -> Void)?
+    public var forwardedLogs: ((ISMChatBotLogTrackingData) -> Void)?
 
     private init() {
         self.subsystem = "com.isometrik.chatbot"
@@ -72,10 +72,10 @@ private extension OSLogType {
 
 extension ISMChatBotLogManager {
     
-    func logSuccessEvents(request: URLRequest, status: Int) {
+    func logSuccessEvents(request: URLRequest, status: Int, responseData: Data) {
         
         let endpoint = request.url?.path ?? "no_endpoint"
-        let eventName = "success_\(endpoint)"
+        let eventName = "ISMChatBot_success_\(endpoint)"
         
         let token = request.allHTTPHeaderFields?["Authorization"] ?? "no_auth_token"
         let httpMethod = request.httpMethod ?? "no_method"
@@ -83,18 +83,39 @@ extension ISMChatBotLogManager {
         // Extract last 8 characters of token
         let tokenLast8 = token.suffix(8)
         
-        let param: [String: String] = [
+        var param: [String: String] = [
             "token": "..\(tokenLast8)",
             "httpMethod": "\(httpMethod)",
         ]
         
-        forwardLogs?(ISMChatBotLogTrackingData(eventName: eventName, eventParameters: param, status: status))
+        // parse the body data for logs
+        let messageSent: String?
+        let location: String?
+        
+        if let bodyData = request.httpBody {
+            let decoder = JSONDecoder()
+            if let json = try? decoder.decode(GPTClientRequestParameters.self, from: bodyData) {
+                param["location"] = "\(json.location)"
+                param["messageToBot"] = "\(json.message)"
+                param["userId"] = "\(json.userId)"
+            }
+        }
+        
+        // parse the response data for logs
+        let decoder = JSONDecoder()
+        if let json = try? decoder.decode(GptClientResponseModel.self, from: responseData) {
+            if let text = json.text {
+                param["chatBotResponse"] = "\(json.text)"
+            }
+        }
+        
+        forwardedLogs?(ISMChatBotLogTrackingData(eventName: eventName, eventParameters: param, status: status))
     }
     
     func logFailureEvents(request: URLRequest, status: Int, data: Data) {
         
         let endpoint = request.url?.path ?? "no_endpoint"
-        let eventName = "failure_\(endpoint)"
+        let eventName = "ISMChatBot_failure_\(endpoint)"
         
         let token = request.allHTTPHeaderFields?["Authorization"] ?? "no_auth_token"
         let httpMethod = request.httpMethod ?? "no_method"
@@ -117,8 +138,7 @@ extension ISMChatBotLogManager {
             "error": "\(errorMsg)"
         ]
         
-        
-        forwardLogs?(ISMChatBotLogTrackingData(eventName: eventName, eventParameters: param, status: status))
+        forwardedLogs?(ISMChatBotLogTrackingData(eventName: eventName, eventParameters: param, status: status))
     }
     
 }

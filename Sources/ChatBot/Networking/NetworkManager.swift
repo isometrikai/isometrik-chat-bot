@@ -78,7 +78,7 @@ public class NetworkManager: NetworkManagable {
 
             switch response.statusCode {
             case 200 ... 299:
-                ISMChatBotLogManager.shared.logSuccessEvents(request: request, status: response.statusCode)
+                ISMChatBotLogManager.shared.logSuccessEvents(request: request, status: response.statusCode, responseData: data)
                 return data
             case 400, 401, 406:
                 ISMChatBotLogManager.shared.logFailureEvents(request: request, status: response.statusCode, data: data)

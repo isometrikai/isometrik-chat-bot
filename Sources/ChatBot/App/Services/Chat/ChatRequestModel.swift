@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct GPTClientRequestParameters: Encodable {
+public struct GPTClientRequestParameters: Codable {
     
     public let chatBotId: Int
     public let message: String
