@@ -75,7 +75,8 @@ extension ISMChatBotLogManager {
     func logSuccessEvents(request: URLRequest, status: Int, responseData: Data) {
         
         let endpoint = request.url?.path ?? "no_endpoint"
-        let eventName = "ISMChatBot_success_\(endpoint)"
+        let cleanedEndpoint = endpoint.replacingOccurrences(of: "/", with: "_")
+        let eventName = "ismchatbot_success\(cleanedEndpoint)"
         
         let token = request.allHTTPHeaderFields?["Authorization"] ?? "no_auth_token"
         let httpMethod = request.httpMethod ?? "no_method"
@@ -105,7 +106,7 @@ extension ISMChatBotLogManager {
         let decoder = JSONDecoder()
         if let json = try? decoder.decode(GptClientResponseModel.self, from: responseData) {
             if let text = json.text {
-                param["chatBotResponse"] = "\(json.text)"
+                param["chatBotResponse"] = "\(text)"
             }
         }
         
@@ -115,7 +116,8 @@ extension ISMChatBotLogManager {
     func logFailureEvents(request: URLRequest, status: Int, data: Data) {
         
         let endpoint = request.url?.path ?? "no_endpoint"
-        let eventName = "ISMChatBot_failure_\(endpoint)"
+        let cleanedEndpoint = endpoint.replacingOccurrences(of: "/", with: "_")
+        let eventName = "ismchatbot_failure\(cleanedEndpoint)"
         
         let token = request.allHTTPHeaderFields?["Authorization"] ?? "no_auth_token"
         let httpMethod = request.httpMethod ?? "no_method"
