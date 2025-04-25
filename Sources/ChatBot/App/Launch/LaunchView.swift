@@ -124,7 +124,7 @@ public struct LaunchView: View {
     
     func didWidgetTapped(withData: ChatBotWidget?) {
         guard let withData else { return }
-        print("StoreId: \(withData.storeId ?? "")")
+        print("StoreId: \(withData.id ?? "")")
     }
     
 }

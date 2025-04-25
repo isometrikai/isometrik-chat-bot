@@ -21,7 +21,7 @@ struct ChatMessageScrollView: View {
     var suggestedReplyAction: ((String)->Void)?
     var widgetAction: ((ChatBotWidget?)->Void)?
     var widgetResponseAction: ((String?)->Void)?
-    var widgetViewAllResponseAction: ((String?, [ChatBotWidget]? , WidgetType)->Void)?
+    var widgetViewAllResponseAction: ((String?, [ChatBotWidget]? , [String]? , WidgetType)->Void)?
     
     // MARK: - BODY
     
@@ -54,8 +54,8 @@ struct ChatMessageScrollView: View {
                                 widgetResponseAction: { reply in
                                     widgetResponseAction?(reply)
                                 },
-                                widgetViewAllResponseAction: { (title, widgetData, widgetType) in
-                                    widgetViewAllResponseAction?(title, widgetData, widgetType)
+                                widgetViewAllResponseAction: { (title, widgetData, options, widgetType) in
+                                    widgetViewAllResponseAction?(title, widgetData, options, widgetType)
                                 }
                             )
                                 .transition(.push(from: .bottom))

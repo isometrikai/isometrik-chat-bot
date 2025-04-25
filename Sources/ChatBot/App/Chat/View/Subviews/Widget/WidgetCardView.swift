@@ -38,7 +38,7 @@ struct WidgetCardView: View {
                 ZStack(alignment: .center) {
                     Rectangle()
                         .fill(Color.gray.opacity(0.2))
-                    URLImageView(url: URL(string: widgetData?.imageURL ?? "") ?? URL(string: "https://i.sstatic.net/frlIf.png"))
+                    URLImageView(url: URL(string: widgetData?.logoImages?.logoImageMobile ?? "") ?? URL(string: "https://i.sstatic.net/frlIf.png"))
                         .scaledToFill()
                         .clipped()
                 }
@@ -49,22 +49,48 @@ struct WidgetCardView: View {
             .clipped()
             
             VStack(alignment: .leading) {
-                Text(widgetData?.title ?? "title")
-                    .foregroundColor(colorScheme == .dark ? .white : .black)
-                    .font(.system(size: 14))
-                    .multilineTextAlignment(.leading)
-                    .lineLimit(2)
-                Text(widgetData?.subtitle ?? "subtitle")
-                    .font(.system(size: 12))
-                    .foregroundColor(Color(uiColor: UIColor(hex: "#94A0AF")))
-                Text(getDescriptionText())
-                    .foregroundColor(colorScheme == .dark ? .white : .black)
-                    .font(.system(size: 14))
-                    .padding(EdgeInsets(top: 12, leading: 0, bottom: 0, trailing: 0))
-                Spacer()
-                if widgetData?.buttontext != nil {
-                    self.getActionButton()
+                HStack(alignment: .top, spacing: 5, content: {
+                    Text(widgetData?.storename ?? "title")
+                        .foregroundColor(colorScheme == .dark ? .white : .black)
+                        .font(.system(size: 14))
+                        .multilineTextAlignment(.leading)
+                        .lineLimit(2)
+                    if let averageRating = widgetData?.avgRating   {
+                        Text("⭐ \(averageRating, specifier: "%.1f")")
+                            .foregroundColor(colorScheme == .dark ? .white : .black)
+                            .font(.system(size: 14))
+                    }
+                    
+                })
+                
+                HStack(alignment: .top, spacing: 5, content: {
+                    if let averageCost = widgetData?.averageCostForMealForTwo ,
+                       let currencyCode = widgetData?.currencyCode {
+                        Text("\(currencyCode) \(averageCost)")
+                            .font(.system(.subheadline))
+                            .foregroundStyle(colorScheme == .dark ? .white : .black)
+                        Text("\(currencyCode) \(averageCost + 10)")
+                            .font(.system(.subheadline))
+                            .foregroundStyle(Color.gray)
+                            .strikethrough()
+                    }
+                })
+                
+                if let distanceMiles = widgetData?.distanceMiles {
+                    Text("\(distanceMiles, specifier: "%.2f") Miles away")
+                        .font(.system(.caption))
+                        .foregroundColor(Color.white)
                 }
+                
+                if let storeTag = widgetData?.storeTag {
+                    Text(storeTag)
+                        .font(.system(.caption))
+                        .foregroundColor(Color.red)
+                }
+                
+//                if widgetData?.buttontext != nil {
+//                    self.getActionButton()
+//                }
 //                self.getActionButton()
             }
             .padding(.horizontal, 8)
@@ -89,9 +115,9 @@ struct WidgetCardView: View {
         }
         
         let price = widget.price ?? "0.0"
-        let averageCost = widget.averageCost ?? 4
+        let averageCost = widget.averageCostForMealForTwo ?? 4
         let currencyCode = widget.currencyCode ?? "AED"
-        let averageRating = String(format: "%.1f", widget.averageRating ?? 0)
+        let averageRating = String(format: "%.1f", widget.avgRating ?? 0)
         
         if averageCost != 0 {
             return "\(averageRating) ⭐ • \(currencyCode) \(averageCost) for two"
@@ -138,29 +164,29 @@ struct WidgetCardView: View {
     }
 
     
-    func getActionButton() -> some View {
-        return AnyView(
-            Button {
-                widgetTappedAction?(widgetData)
-            } label: {
-                HStack {
-                    Spacer()
-                    Text(widgetData?.buttontext ?? "order now") // Fixed this line
-                        .font(.system(size: 14))
-                        .foregroundColor(Color(uiColor: UIColor(hex: gptUIPreference?.primaryColor ?? "")))
-                    Spacer()
-                }
-                .padding(.vertical, 10)
-                .padding(.horizontal, 16)
-                .overlay {
-                    getButtonOverlay(borderColor: .clear, backgroundColor: Color(uiColor: UIColor(hex: gptUIPreference?.primaryColor ?? "").withAlphaComponent(0.1)), radius: 6)
-                }
-            }
-            .cornerRadius(6)
-            .buttonStyle(AnimatedButtonStyle())
-            .contentShape(Rectangle())
-        )
-    }
+//    func getActionButton() -> some View {
+//        return AnyView(
+//            Button {
+//                widgetTappedAction?(widgetData)
+//            } label: {
+//                HStack {
+//                    Spacer()
+//                    Text(widgetData?.buttontext ?? "order now") // Fixed this line
+//                        .font(.system(size: 14))
+//                        .foregroundColor(Color(uiColor: UIColor(hex: gptUIPreference?.primaryColor ?? "")))
+//                    Spacer()
+//                }
+//                .padding(.vertical, 10)
+//                .padding(.horizontal, 16)
+//                .overlay {
+//                    getButtonOverlay(borderColor: .clear, backgroundColor: Color(uiColor: UIColor(hex: gptUIPreference?.primaryColor ?? "").withAlphaComponent(0.1)), radius: 6)
+//                }
+//            }
+//            .cornerRadius(6)
+//            .buttonStyle(AnimatedButtonStyle())
+//            .contentShape(Rectangle())
+//        )
+//    }
     
 }
 

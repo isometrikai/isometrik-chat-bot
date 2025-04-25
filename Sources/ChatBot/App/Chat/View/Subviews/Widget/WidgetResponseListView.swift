@@ -11,13 +11,13 @@ struct WidgetResponseListView: View {
     
     // MARK: - PROPERTIES
     
-    var widgetData: [ChatBotWidget]
+    var options: [String]
     var appTheme: AppTheme
     var gptUIPreference: MyGptUIPreferences?
     var isReplied: Bool
     
     var widgetResponseAction: ((String?)->Void)?
-    var widgetViewAllResponseAction: ((String?, [ChatBotWidget]? , WidgetType)->Void)?
+    var widgetViewAllResponseAction: ((String?, [String]? , WidgetType)->Void)?
     
     // MARK: - MAIN
     
@@ -28,11 +28,11 @@ struct WidgetResponseListView: View {
                 LazyHStack(spacing: 12) {
                     
                     // Loop through the first 3 widgets
-                    ForEach(widgetData.prefix(3), id: \.self) { widget in
+                    ForEach(options.prefix(3), id: \.self) { option in
                         Button {
-                            widgetResponseAction?(widget.actionText)
+                            widgetResponseAction?(option)
                         } label: {
-                            Text(widget.actionText ?? "")
+                            Text(option)
                                 .padding(.vertical, 8)
                                 .padding(.horizontal, 16)
                                 .font(.system(size: 14))
@@ -45,10 +45,10 @@ struct WidgetResponseListView: View {
                         .buttonStyle(AnimatedButtonStyle())
                     }
                     
-                    if widgetData.count > 3 {
+                    if options.count > 3 {
                         // Add "View All" button
                         Button {
-                            widgetViewAllResponseAction?("", widgetData, .responseView)
+                            widgetViewAllResponseAction?("", options, .responseView)
                         } label: {
                             Text("View All")
                                 .padding(.vertical, 8)

@@ -21,7 +21,7 @@ public struct ChatNetworkService: ChatAPIService {
     }
     
     public func gptClientMsg(requestParameter: GPTClientRequestParameters) async throws -> GptClientResponseModel {
-        let apiModel = APIRequestModel(api: ChatAPI.GPTClientMsg, body: requestParameter)
+        let apiModel = APIRequestModel(api: ChatAPI.AgentChat, body: requestParameter)
         return try await networkClient.getDecodedData(apiModel: apiModel)
     }
     

@@ -9,7 +9,7 @@ struct WidgetResponseOptionsDrawerView: View {
     @Environment(\.dismiss) var dismiss
     @Environment(\.customScheme) var colorScheme
     var title: String
-    var widgetData: [ChatBotWidget]
+    var options: [String]
     var appTheme: AppTheme
     var gptUIPreference: MyGptUIPreferences?
     var responseCallback: ((String?)->Void)?
@@ -34,12 +34,12 @@ struct WidgetResponseOptionsDrawerView: View {
                 
                 ScrollView(.vertical, showsIndicators: false) {
                     VStack(alignment: .leading, spacing: 12) {
-                        ForEach(widgetData, id: \.self) { widget in
+                        ForEach(options, id: \.self) { option in
                             Button {
-                                responseCallback?(widget.actionText)
+                                responseCallback?(option)
                                 dismiss()
                             } label: {
-                                Text(widget.actionText ?? "--")
+                                Text(option)
                                     .font(.system(size: 14))
                                     .foregroundColor(appTheme.theme.colors.primaryColor(for: colorScheme))
                                     .frame(height: 50)

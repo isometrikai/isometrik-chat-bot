@@ -7,10 +7,12 @@
 
 import Foundation
 import CryptoKit
+import UIKit
 
 enum WidgetType: String {
-    case cardView = "Card View"
-    case responseView = "Response Flow"
+    case cardView = "stores"
+    case responseView = "options"
+    
 }
 
 public protocol ChatBotDelegate {
@@ -37,6 +39,7 @@ public class ChatViewModel: ObservableObject {
     
     var widgetResponseSheetTitle: String = ""
     var widgetResponseOptions: [ChatBotWidget] = []
+    var widgetOptions: [String] = []
     
     // MARK: - INITIALIZER
     
@@ -70,6 +73,10 @@ public class ChatViewModel: ObservableObject {
         
         sendMessageTask = Task {
             do {
+                // Agent identifier provided by the backend service
+                // This is used to associate actions with the current agent
+                let agentId = "67a9df239dbfc422720f19b5"
+                
                 let parameters = GPTClientRequestParameters(
                     chatBotId: Int(appConfigurations.chatBotId) ?? 0,
                     message: message,
@@ -77,8 +84,11 @@ public class ChatViewModel: ObservableObject {
                     storeCategoryId: appConfigurations.storeCategoryId,
                     userId: appConfigurations.userId,
                     location: appConfigurations.location,
-                    longitude: appConfigurations.longitude,
-                    latitude: appConfigurations.latitude
+                    longitude: "\(appConfigurations.longitude)",
+                    latitude: "\(appConfigurations.latitude)",
+                    isLoggedIn: false,
+                    fingerPrintId: UIDevice.current.identifierForVendor?.uuidString ?? "Unknown",
+                    agentId: agentId
                 )
                 
                 let data = try await networkMiddleware.performRequest {
