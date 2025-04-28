@@ -12,6 +12,7 @@ import UIKit
 enum WidgetType: String {
     case cardView = "stores"
     case responseView = "options"
+    case productView = "products"
     
 }
 
@@ -38,8 +39,9 @@ public class ChatViewModel: ObservableObject {
     @Published var hideSuggestedReplies: Bool = false
     
     var widgetResponseSheetTitle: String = ""
-    var widgetResponseOptions: [ChatBotWidget] = []
+    var widgetResponseOptions: [WidgetData] = []
     var widgetOptions: [String] = []
+    var widgetType: WidgetType = .cardView
     
     // MARK: - INITIALIZER
     

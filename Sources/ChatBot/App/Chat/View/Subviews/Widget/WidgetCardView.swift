@@ -26,6 +26,7 @@ struct WidgetCardView: View {
     @Environment(\.customScheme) var colorScheme
     var appTheme: AppTheme
     var widgetData: ChatBotWidget?
+    var type: WidgetType = .cardView
     var gptUIPreference: MyGptUIPreferences?
     var widgetTappedAction: ((ChatBotWidget?) -> Void)?
     
@@ -38,24 +39,28 @@ struct WidgetCardView: View {
                 ZStack(alignment: .center) {
                     Rectangle()
                         .fill(Color.gray.opacity(0.2))
-                    URLImageView(url: URL(string: widgetData?.logoImages?.logoImageMobile ?? "") ?? URL(string: "https://i.sstatic.net/frlIf.png"))
+                    URLImageView(url: getImageURL())
                         .scaledToFill()
                         .clipped()
                 }
                 .frame(height: 150)
-                getSupportedOrderTypeViews(orderType: widgetData?.supportedOrderTypes ?? 0)
+                
+                if type == .cardView {
+                    getSupportedOrderTypeViews(orderType: widgetData?.supportedOrderTypes ?? 0)
+                }
+                
             }
             .frame(maxWidth: .infinity)
             .clipped()
             
             VStack(alignment: .leading) {
                 HStack(alignment: .top, spacing: 5, content: {
-                    Text(widgetData?.storename ?? "title")
+                    Text(getItemName())
                         .foregroundColor(colorScheme == .dark ? .white : .black)
                         .font(.system(size: 14))
                         .multilineTextAlignment(.leading)
                         .lineLimit(2)
-                    if let averageRating = widgetData?.avgRating   {
+                    if let averageRating = getAverageRating() {
                         Text("⭐ \(averageRating, specifier: "%.1f")")
                             .foregroundColor(colorScheme == .dark ? .white : .black)
                             .font(.system(size: 14))
@@ -64,25 +69,40 @@ struct WidgetCardView: View {
                 })
                 
                 HStack(alignment: .top, spacing: 5, content: {
-                    if let averageCost = widgetData?.averageCostForMealForTwo ,
-                       let currencyCode = widgetData?.currencyCode {
-                        Text("\(currencyCode) \(averageCost)")
-                            .font(.system(.subheadline))
-                            .foregroundStyle(colorScheme == .dark ? .white : .black)
-                        Text("\(currencyCode) \(averageCost + 10)")
-                            .font(.system(.subheadline))
-                            .foregroundStyle(Color.gray)
-                            .strikethrough()
+                    
+                    
+                    if type == .cardView, let currencyCode = widgetData?.currencyCode {
+                        if let price = getPrice(), let originalPrice = getOriginalPrice() {
+                            Text("\(currencyCode) \(price)")
+                                .font(.system(.subheadline))
+                                .foregroundStyle(colorScheme == .dark ? .white : .black)
+                            Text("\(currencyCode) \(originalPrice)")
+                                .font(.system(.subheadline))
+                                .foregroundStyle(Color.gray)
+                                .strikethrough()
+                        }
+                    } else {
+                        if let price = getPrice() as? Double, let originalPrice = getOriginalPrice() as? Double, let currencyCode = widgetData?.currency{
+                            Text("\(currencyCode) \(price, specifier: "%.2f")")
+                                .font(.system(.subheadline))
+                                .foregroundStyle(colorScheme == .dark ? .white : .black)
+                            Text("\(currencyCode) \(originalPrice, specifier: "%.2f")")
+                                .font(.system(.subheadline))
+                                .foregroundStyle(Color.gray)
+                                .strikethrough()
+                        }
+                        
+                        
                     }
                 })
                 
-                if let distanceMiles = widgetData?.distanceMiles {
+                if type == .cardView, let distanceMiles = widgetData?.distanceMiles {
                     Text("\(distanceMiles, specifier: "%.2f") Miles away")
                         .font(.system(.caption))
                         .foregroundColor(Color.white)
                 }
                 
-                if let storeTag = widgetData?.storeTag {
+                if type == .cardView, let storeTag = widgetData?.storeTag {
                     Text(storeTag)
                         .font(.system(.caption))
                         .foregroundColor(Color.red)
@@ -108,6 +128,66 @@ struct WidgetCardView: View {
     
     
     // MARK: - FUNCTIONS
+    
+    private func getImageURL() -> URL {
+        let defaultURL = URL(string: "https://i.sstatic.net/frlIf.png")
+        
+        switch type {
+        case .cardView:
+            return URL(string: widgetData?.logoImages?.logoImageMobile ?? "") ?? defaultURL!
+        case .productView:
+            return URL(string: widgetData?.productImage ?? "") ?? defaultURL!
+        default:
+            return defaultURL!
+        }
+    }
+    
+    private func getItemName() -> String {
+        switch type {
+        case .cardView:
+            return widgetData?.storename ?? "Store"
+        case .productView:
+            return widgetData?.productName ?? "Product"
+        default:
+            return "Item"
+        }
+    }
+    
+    private func getAverageRating() -> Double? {
+        switch type {
+        case .cardView:
+            return widgetData?.avgRating
+        case .productView:
+            return widgetData?.averageRating
+        default:
+            return nil
+        }
+    }
+    
+    private func getPrice() -> Any? {
+        switch type {
+        case .cardView:
+            return widgetData?.averageCostForMealForTwo
+        case .productView:
+            return widgetData?.finalPriceList?.finalPrice
+        default:
+            return nil
+        }
+    }
+    
+    private func getOriginalPrice() -> Any? {
+        switch type {
+        case .cardView:
+            if let price = widgetData?.averageCostForMealForTwo {
+                return price + 10
+            }
+            return nil
+        case .productView:
+            return widgetData?.finalPriceList?.basePrice
+        default:
+            return nil
+        }
+    }
                          
     func getDescriptionText() -> String {
         guard let widget = widgetData else {

@@ -11,7 +11,7 @@ struct WidgetResponseListView: View {
     
     // MARK: - PROPERTIES
     
-    var options: [String]
+    var widgetData: [WidgetData]
     var appTheme: AppTheme
     var gptUIPreference: MyGptUIPreferences?
     var isReplied: Bool
@@ -28,39 +28,42 @@ struct WidgetResponseListView: View {
                 LazyHStack(spacing: 12) {
                     
                     // Loop through the first 3 widgets
-                    ForEach(options.prefix(3), id: \.self) { option in
-                        Button {
-                            widgetResponseAction?(option)
-                        } label: {
-                            Text(option)
-                                .padding(.vertical, 8)
-                                .padding(.horizontal, 16)
-                                .font(.system(size: 14))
-                                .foregroundColor(Color(hex: gptUIPreference?.primaryColor ?? ""))
-                                .overlay {
-                                    getButtonOverlay(borderColor: Color(hex: gptUIPreference?.primaryColor ?? ""))
-                                }
-                                .padding(.vertical, 4)
+                    if let options = getOptionsWidget() {
+                        ForEach(options.prefix(3), id: \.self) { option in
+                            Button {
+                                widgetResponseAction?(option)
+                            } label: {
+                                Text(option)
+                                    .padding(.vertical, 8)
+                                    .padding(.horizontal, 16)
+                                    .font(.system(size: 14))
+                                    .foregroundColor(Color(hex: gptUIPreference?.primaryColor ?? ""))
+                                    .overlay {
+                                        getButtonOverlay(borderColor: Color(hex: gptUIPreference?.primaryColor ?? ""))
+                                    }
+                                    .padding(.vertical, 4)
+                            }
+                            .buttonStyle(AnimatedButtonStyle())
                         }
-                        .buttonStyle(AnimatedButtonStyle())
-                    }
-                    
-                    if options.count > 3 {
-                        // Add "View All" button
-                        Button {
-                            widgetViewAllResponseAction?("", options, .responseView)
-                        } label: {
-                            Text("View All")
-                                .padding(.vertical, 8)
-                                .padding(.horizontal, 16)
-                                .font(.system(size: 14))
-                                .foregroundColor(.white)
-                                .overlay {
-                                    getButtonOverlay(isDashed: true, borderColor: Color.white.opacity(0.3))
-                                }
-                                .padding(.vertical, 4)
+                        
+                        if options.count > 3 {
+                            // Add "View All" button
+                            Button {
+                                widgetViewAllResponseAction?("", options, .responseView)
+                            } label: {
+                                Text("View All")
+                                    .padding(.vertical, 8)
+                                    .padding(.horizontal, 16)
+                                    .font(.system(size: 14))
+                                    .foregroundColor(.white)
+                                    .overlay {
+                                        getButtonOverlay(isDashed: true, borderColor: Color.white.opacity(0.3))
+                                    }
+                                    .padding(.vertical, 4)
+                            }
+                            .buttonStyle(AnimatedButtonStyle())
                         }
-                        .buttonStyle(AnimatedButtonStyle())
+                        
                     }
                     
                 }//: LazyHStack
@@ -68,6 +71,25 @@ struct WidgetResponseListView: View {
             .customContentMargins(leading: 65, trailing: 16)
         }
         
+    }
+    
+    func getOptionsWidget() -> [String]? {
+        var allChatBotWidgets: [String] = []
+        
+        // Loop through each element in widgetData
+        for dataElement in widgetData {
+            if let widgetUnions = dataElement.widget {
+                // Extract ChatBotWidget cases and add to our array
+                for widgetUnion in widgetUnions {
+                    if case .string(let chatBotWidget) = widgetUnion {
+                        allChatBotWidgets.append(chatBotWidget)
+                    }
+                }
+            }
+        }
+        
+        // Return nil if no ChatBotWidget found, otherwise return the array
+        return allChatBotWidgets.isEmpty ? nil : allChatBotWidgets
     }
     
 }

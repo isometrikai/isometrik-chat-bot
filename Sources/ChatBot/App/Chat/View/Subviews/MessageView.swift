@@ -19,7 +19,7 @@ struct MessageView: View {
     
     var widgetAction: ((ChatBotWidget?)->Void)?
     var widgetResponseAction: ((String?)->Void)?
-    var widgetViewAllResponseAction: ((String?, [ChatBotWidget]? , [String]? , WidgetType)->Void)?
+    var widgetViewAllResponseAction: ((String?, [WidgetData]? , [String]? , WidgetType)->Void)?
     
     private var leadingPadding: CGFloat {
         message.isFromUser ? 40 : 0
@@ -107,15 +107,15 @@ struct MessageView: View {
     
     private func handleWidgets() -> some View {
         let widgetType = getWidgetType()
-        let widgetData = getStores()
-        let options = getOptions()
+        let widgetData = getWidgetData()
         
         switch widgetType {
-        case .cardView:
+        case .cardView, .productView:
             
             return AnyView(
                 WidgetCardListView(
                     widgetData: widgetData,
+                    type: widgetType ?? .cardView,
                     appTheme: appTheme,
                     gptUIPreference: gptUIPreference,
                     widgetAction: { widgetData in
@@ -130,7 +130,7 @@ struct MessageView: View {
         case .responseView:
             return AnyView(
                 WidgetResponseListView(
-                    options: options,
+                    widgetData: widgetData,
                     appTheme: appTheme,
                     gptUIPreference: gptUIPreference,
                     isReplied: getRepliedStatusToSuggestions(),
@@ -167,18 +167,9 @@ struct MessageView: View {
         
     }
     
-    func getStores() -> [ChatBotWidget] {
-        guard let widgetData = message.messageData?.widgetData, !widgetData.isEmpty else {
-            return []
-        }
-        return widgetData.first?.getStores() ?? []
-    }
-
-    func getOptions() -> [String] {
-        guard let widgetData = message.messageData?.widgetData, !widgetData.isEmpty else {
-            return []
-        }
-        return widgetData.first?.getOptions() ?? []
+   func getWidgetData() -> [WidgetData] {
+        return message.messageData?.widgetData ?? []
+        
     }
     
     func getWidgetType() -> WidgetType? {

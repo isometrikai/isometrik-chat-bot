@@ -116,6 +116,7 @@ struct ChatView: View {
                 WidgetCardDrawerView(
                     title: viewModel.widgetResponseSheetTitle,
                     widgetData: viewModel.widgetResponseOptions,
+                    type: viewModel.widgetType,
                     appTheme: viewModel.appConfigurations.appTheme,
                     gptUIPreference: viewModel.myGptSessionData?.data?.first?.uiPreferences,
                     responseCallback: handleWidgetAction
@@ -175,13 +176,14 @@ struct ChatView: View {
         HapticFeedbackManager.shared.triggerSelection()
     }
     
-    private func handleWidgetViewAllResponseAction(title: String?, widgets: [ChatBotWidget]?, options: [String]?, widgetType: WidgetType){
+    private func handleWidgetViewAllResponseAction(title: String?, widgets: [WidgetData]?, options: [String]?, widgetType: WidgetType){
         
         guard let title else { return }
         
         if let widgets, !widgets.isEmpty {
             viewModel.widgetResponseOptions = widgets
             viewModel.widgetResponseSheetTitle = title
+            viewModel.widgetType = widgetType
             showViewAllWidgetForCard = true
             HapticFeedbackManager.shared.triggerImpact(style: .heavy)
         }else if let options {
