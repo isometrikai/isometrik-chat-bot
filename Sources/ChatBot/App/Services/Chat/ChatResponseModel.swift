@@ -114,7 +114,7 @@ public struct ChatBotWidget: Codable, Hashable {
     public var logoImages: LogoImages?
     public var isTempClose: Bool?
     public var address: StoreAddress?
-    public var title: String?
+    public var cuisineDetails: String?
     public var storeImage: String?
     public var distanceKM, distanceMiles: Double?
     public var tableReservations: Bool?
@@ -142,7 +142,7 @@ public struct ChatBotWidget: Codable, Hashable {
         case logoImages
         case isTempClose = "is_temp_close"
         case address
-        case title = "cuisineDetails"
+        case cuisineDetails
         case storeImage
         case distanceKM = "distance_km"
         case distanceMiles = "distance_miles"
@@ -171,7 +171,7 @@ public struct ChatBotWidget: Codable, Hashable {
                 logoImages: LogoImages? = nil,
                 isTempClose: Bool? = nil,
                 address: StoreAddress? = nil,
-                title: String? = nil,
+                cuisineDetails: String? = nil,
                 storeImage: String? = nil,
                 distanceKM: Double? = nil,
                 distanceMiles: Double? = nil,
@@ -197,7 +197,7 @@ public struct ChatBotWidget: Codable, Hashable {
         self.logoImages = logoImages
         self.isTempClose = isTempClose
         self.address = address
-        self.title = title
+        self.cuisineDetails = cuisineDetails
         self.storeImage = storeImage
         self.distanceKM = distanceKM
         self.distanceMiles = distanceMiles
@@ -227,7 +227,7 @@ public struct ChatBotWidget: Codable, Hashable {
         self.logoImages = try container.decodeIfPresent(LogoImages.self, forKey: .logoImages)
         self.isTempClose = try container.decodeIfPresent(Bool.self, forKey: .isTempClose)
         self.address = try container.decodeIfPresent(StoreAddress.self, forKey: .address)
-        self.title = try container.decodeIfPresent(String.self, forKey: .title)
+        self.cuisineDetails = try container.decodeIfPresent(String.self, forKey: .cuisineDetails)
         self.storeImage = try container.decodeIfPresent(String.self, forKey: .storeImage)
         self.distanceKM = try container.decodeIfPresent(Double.self, forKey: .distanceKM)
         self.distanceMiles = try container.decodeIfPresent(Double.self, forKey: .distanceMiles)

@@ -21,6 +21,7 @@ public struct ThemeImages {
     public var storeDelivery : Image = loadImageSafely(with: "ic_delivery")
     public var storeDinein : Image = loadImageSafely(with: "ic_dinein")
     public var storePickup : Image = loadImageSafely(with: "ic_pickup")
+    public var locationPin : Image = loadImageSafely(with: "location_pin")
     
     public init(){}
     
@@ -31,7 +32,8 @@ public struct ThemeImages {
         welcomeBot: Image? = nil,
         storeDelivery: Image? = nil,
         storeDinein: Image? = nil,
-        storePickup: Image? = nil
+        storePickup: Image? = nil,
+        locationPin: Image? = nil
     ) {
         if let appLogo { self.appLogo = appLogo }
         if let sendMessage { self.sendMessage = sendMessage }
@@ -40,6 +42,7 @@ public struct ThemeImages {
         if let storeDelivery { self.storeDelivery = storeDelivery }
         if let storeDinein { self.storeDinein = storeDinein }
         if let storePickup { self.storePickup = storePickup }
+        if let locationPin { self.locationPin = locationPin }
     }
     
 }
