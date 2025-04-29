@@ -177,8 +177,8 @@ struct ChatView: View {
         HapticFeedbackManager.shared.triggerNotification(type: .error)
     }
     
-    private func handleWidgetAction(widget: ChatBotWidget?) {
-        viewModel.delegate?.navigateFromBot(withData: widget, dismissOnSuccess: { success in
+    private func handleWidgetAction(widget: ChatBotWidget?, type: WidgetType) {
+        viewModel.delegate?.navigateFromBot(withData: widget, type: type, dismissOnSuccess: { success in
             dismiss_callback?()
             dismiss()
         })

@@ -33,7 +33,7 @@ struct WidgetProductView: View {
                                 .frame(width: 180, height: 200)
                                 .overlay(alignment: .bottomLeading) {
                                     // Rating badge overlay at top-leading position
-                                    if let averageRating = getAverageRating() {
+                                    if let averageRating = getAverageRating(), averageRating > 0 {
                                         RatingBadge(rating: averageRating)
                                             .padding(8)
                                     }

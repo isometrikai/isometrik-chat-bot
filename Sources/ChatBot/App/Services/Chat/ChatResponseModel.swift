@@ -163,6 +163,17 @@ public struct ChatBotWidget: Codable, Hashable {
     public var currencyCode: String?
     public var currencySymbol: String?
     public var price: String?
+    public var imageURL: String?
+    public let productID: String?
+    public let description: String?
+    public let subtitle, buttontext: String?
+    public let link: String?
+    public let actionHandler: String?
+    public var averageCost: Int?
+    public var discountPrice: String?
+    public var storeId: String?
+    public var actionText: String?
+
     
     // Products
     public var productName: String?
@@ -175,6 +186,13 @@ public struct ChatBotWidget: Codable, Hashable {
     public var currency: String?
     
     enum CodingKeys: String, CodingKey {
+        case imageURL
+        case productID = "productId"
+        case description, subtitle, buttontext, link, actionHandler
+        case averageCost = "average_cost"
+        case discountPrice = "discount_price"
+        case storeId = "store_id"
+        case actionText
         case id
         case storename
         case avgRating
@@ -229,7 +247,19 @@ public struct ChatBotWidget: Codable, Hashable {
                 finalPriceList: FinalPriceList? = nil,
                 productImage: String? = nil,
                 averageRating: Double? = nil,
-                currency: String? = nil) {
+                currency: String? = nil,
+                imageURL: String? = nil,
+                productID: String? = nil,
+                description: String? = nil,
+                subtitle: String? = nil,
+                buttontext: String? = nil,
+                link: String? = nil,
+                actionHandler: String? = nil,
+                averageCost: Int? = nil,
+                discountPrice: String? = nil,
+                storeId: String? = nil,
+                actionText: String? = nil
+    ) {
         self.id = id
         self.storename = storename
         self.avgRating = avgRating
@@ -256,6 +286,17 @@ public struct ChatBotWidget: Codable, Hashable {
         self.productImage = productImage
         self.averageRating = averageRating
         self.currency = currency
+        self.imageURL = imageURL
+        self.productID = productID
+        self.description = description
+        self.subtitle = subtitle
+        self.buttontext = buttontext
+        self.link = link
+        self.actionHandler = actionHandler
+        self.averageCost = averageCost
+        self.discountPrice = discountPrice
+        self.storeId = storeId
+        self.actionText = actionText
     }
     
     public init(from decoder: Decoder) throws {
@@ -286,6 +327,18 @@ public struct ChatBotWidget: Codable, Hashable {
         self.productImage = try container.decodeIfPresent(String.self, forKey: .productImage)
         self.averageRating = try container.decodeIfPresent(Double.self, forKey: .averageRating)
         self.currency = try container.decodeIfPresent(String.self, forKey: .currency)
+        self.imageURL = try container.decodeIfPresent(String.self, forKey: .imageURL)
+        self.productID = try container.decodeIfPresent(String.self, forKey: .productID)
+        self.description = try container.decodeIfPresent(String.self, forKey: .description)
+        self.subtitle = try container.decodeIfPresent(String.self, forKey: .subtitle)
+        self.buttontext = try container.decodeIfPresent(String.self, forKey: .buttontext)
+        self.link = try container.decodeIfPresent(String.self, forKey: .link)
+        self.actionHandler = try container.decodeIfPresent(String.self, forKey: .actionHandler)
+        self.averageCost = try container.decodeIfPresent(Int.self, forKey: .averageCost)
+        self.discountPrice = try container.decodeIfPresent(String.self, forKey: .discountPrice)
+        self.storeId = try container.decodeIfPresent(String.self, forKey: .storeId)
+        self.actionText = try container.decodeIfPresent(String.self, forKey: .actionText)
+
     }
 }
 

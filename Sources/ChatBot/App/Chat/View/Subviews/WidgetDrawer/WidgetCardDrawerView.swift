@@ -18,7 +18,7 @@ struct WidgetCardDrawerView: View {
     var appTheme: AppTheme
     var gptUIPreference: MyGptUIPreferences?
     
-    var responseCallback: ((ChatBotWidget?)->Void)?
+    var responseCallback: ((ChatBotWidget?,WidgetType)->Void)?
     
     // MARK: - BODY
     
@@ -47,7 +47,7 @@ struct WidgetCardDrawerView: View {
                                     widgetData: widget,
                                     gptUIPreference: gptUIPreference
                                 ) { widget in
-                                    responseCallback?(widget)
+                                    responseCallback?(widget,.cardView)
                                     dismiss()
                                 }
                                 .frame(maxHeight: 300)

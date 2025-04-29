@@ -19,7 +19,7 @@ struct ChatMessageScrollView: View {
     @FocusState.Binding var isFocused: Bool
     
     var suggestedReplyAction: ((String)->Void)?
-    var widgetAction: ((ChatBotWidget?)->Void)?
+    var widgetAction: ((ChatBotWidget?,WidgetType)->Void)?
     var widgetResponseAction: ((String?)->Void)?
     var widgetViewAllResponseAction: ((String?, GptClientResponseModel? , [String]? , WidgetType)->Void)?
     
@@ -48,8 +48,8 @@ struct ChatMessageScrollView: View {
                                 message: message,
                                 chatBotImageUrl: viewModel.myGptSessionData?.data?.first?.profileImage ?? "",
                                 gptUIPreference: viewModel.myGptSessionData?.data?.first?.uiPreferences,
-                                widgetAction: { widget in
-                                    widgetAction?(widget)
+                                widgetAction: { widget, type in
+                                    widgetAction?(widget, type)
                                 },
                                 widgetResponseAction: { reply in
                                     widgetResponseAction?(reply)

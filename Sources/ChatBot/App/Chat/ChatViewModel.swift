@@ -9,7 +9,7 @@ import Foundation
 import CryptoKit
 import UIKit
 
-enum WidgetType: String {
+public enum WidgetType: String {
     case cardView = "stores"
     case responseView = "options"
     case productView = "products"
@@ -17,7 +17,7 @@ enum WidgetType: String {
 }
 
 public protocol ChatBotDelegate {
-    func navigateFromBot(withData: ChatBotWidget?, dismissOnSuccess: @escaping (Bool)->())
+    func navigateFromBot(withData: ChatBotWidget?, type: WidgetType,  dismissOnSuccess: @escaping (Bool)->())
 }
 
 @MainActor

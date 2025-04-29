@@ -18,7 +18,7 @@ struct WidgetProductDrawerView: View {
     var appTheme: AppTheme
     var gptUIPreference: MyGptUIPreferences?
     
-    var responseCallback: ((ChatBotWidget?)->Void)?
+    var responseCallback: ((ChatBotWidget?,WidgetType)->Void)?
     
     // MARK: - BODY
     
@@ -51,7 +51,7 @@ struct WidgetProductDrawerView: View {
                                     widgetData: widget,
                                     gptUIPreference: gptUIPreference
                                 ) { widget in
-                                    responseCallback?(widget)
+                                    responseCallback?(widget,.productView)
                                     dismiss()
                                 }
                             }

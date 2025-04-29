@@ -17,7 +17,7 @@ struct MessageView: View {
     var chatBotImageUrl: String
     var gptUIPreference: MyGptUIPreferences?
     
-    var widgetAction: ((ChatBotWidget?)->Void)?
+    var widgetAction: ((ChatBotWidget?,WidgetType)->Void)?
     var widgetResponseAction: ((String?)->Void)?
     var widgetViewAllResponseAction: ((String?, GptClientResponseModel? , [String]? , WidgetType)->Void)?
     
@@ -118,7 +118,7 @@ struct MessageView: View {
                     appTheme: appTheme,
                     gptUIPreference: gptUIPreference,
                     widgetAction: { widgetData in
-                        widgetAction?(widgetData)
+                        widgetAction?(widgetData,.cardView)
                     },
                     widgetViewAllResponseAction: { title, widgetData, widgetType in
                         widgetViewAllResponseAction?(title, widgetData, [""], widgetType)
@@ -133,7 +133,7 @@ struct MessageView: View {
                     appTheme: appTheme,
                     gptUIPreference: gptUIPreference,
                     widgetAction: { widgetData in
-                        widgetAction?(widgetData)
+                        widgetAction?(widgetData,.productView)
                     },
                     widgetViewAllResponseAction: { title, widgetData, widgetType in
                         widgetViewAllResponseAction?(title, widgetData, [""], widgetType)
