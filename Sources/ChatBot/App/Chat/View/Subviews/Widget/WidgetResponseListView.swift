@@ -11,13 +11,13 @@ struct WidgetResponseListView: View {
     
     // MARK: - PROPERTIES
     
-    var widgetData: [ChatBotWidget]
+    var messageData: GptClientResponseModel
     var appTheme: AppTheme
     var gptUIPreference: MyGptUIPreferences?
     var isReplied: Bool
     
     var widgetResponseAction: ((String?)->Void)?
-    var widgetViewAllResponseAction: ((String?, [ChatBotWidget]? , WidgetType)->Void)?
+    var widgetViewAllResponseAction: ((String?, [String]? , WidgetType)->Void)?
     
     // MARK: - MAIN
     
@@ -28,39 +28,42 @@ struct WidgetResponseListView: View {
                 LazyHStack(spacing: 12) {
                     
                     // Loop through the first 3 widgets
-                    ForEach(widgetData.prefix(3), id: \.self) { widget in
-                        Button {
-                            widgetResponseAction?(widget.actionText)
-                        } label: {
-                            Text(widget.actionText ?? "")
-                                .padding(.vertical, 8)
-                                .padding(.horizontal, 16)
-                                .font(.system(size: 14))
-                                .foregroundColor(Color(hex: gptUIPreference?.primaryColor ?? ""))
-                                .overlay {
-                                    getButtonOverlay(borderColor: Color(hex: gptUIPreference?.primaryColor ?? ""))
-                                }
-                                .padding(.vertical, 4)
+                    if let options = messageData.getOptionsWidget() {
+                        ForEach(options.prefix(3), id: \.self) { option in
+                            Button {
+                                widgetResponseAction?(option)
+                            } label: {
+                                Text(option)
+                                    .padding(.vertical, 8)
+                                    .padding(.horizontal, 16)
+                                    .font(.system(size: 14))
+                                    .foregroundColor(Color(hex: gptUIPreference?.primaryColor ?? ""))
+                                    .overlay {
+                                        getButtonOverlay(borderColor: Color(hex: gptUIPreference?.primaryColor ?? ""))
+                                    }
+                                    .padding(.vertical, 4)
+                            }
+                            .buttonStyle(AnimatedButtonStyle())
                         }
-                        .buttonStyle(AnimatedButtonStyle())
-                    }
-                    
-                    if widgetData.count > 3 {
-                        // Add "View All" button
-                        Button {
-                            widgetViewAllResponseAction?("", widgetData, .responseView)
-                        } label: {
-                            Text("View All")
-                                .padding(.vertical, 8)
-                                .padding(.horizontal, 16)
-                                .font(.system(size: 14))
-                                .foregroundColor(.white)
-                                .overlay {
-                                    getButtonOverlay(isDashed: true, borderColor: Color.white.opacity(0.3))
-                                }
-                                .padding(.vertical, 4)
+                        
+                        if options.count > 3 {
+                            // Add "View All" button
+                            Button {
+                                widgetViewAllResponseAction?("", options, .responseView)
+                            } label: {
+                                Text("View All")
+                                    .padding(.vertical, 8)
+                                    .padding(.horizontal, 16)
+                                    .font(.system(size: 14))
+                                    .foregroundColor(.white)
+                                    .overlay {
+                                        getButtonOverlay(isDashed: true, borderColor: Color.white.opacity(0.3))
+                                    }
+                                    .padding(.vertical, 4)
+                            }
+                            .buttonStyle(AnimatedButtonStyle())
                         }
-                        .buttonStyle(AnimatedButtonStyle())
+                        
                     }
                     
                 }//: LazyHStack

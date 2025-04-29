@@ -17,9 +17,9 @@ struct MessageView: View {
     var chatBotImageUrl: String
     var gptUIPreference: MyGptUIPreferences?
     
-    var widgetAction: ((ChatBotWidget?)->Void)?
+    var widgetAction: ((ChatBotWidget?,WidgetType)->Void)?
     var widgetResponseAction: ((String?)->Void)?
-    var widgetViewAllResponseAction: ((String?, [ChatBotWidget]? , WidgetType)->Void)?
+    var widgetViewAllResponseAction: ((String?, GptClientResponseModel? , [String]? , WidgetType)->Void)?
     
     private var leadingPadding: CGFloat {
         message.isFromUser ? 40 : 0
@@ -106,49 +106,59 @@ struct MessageView: View {
     // MARK: - FUNCTIONS
     
     private func handleWidgets() -> some View {
-        if !getWidgetData().isEmpty {
+        let widgetType = getWidgetType()
+        guard let messageData = message.messageData else {return AnyView(EmptyView())}
+        
+        switch widgetType {
+        case .cardView:
             
-            let widgetData = getWidgetData()
-            let widgetType = getWidgetType()
-            
-            switch widgetType {
-            case .cardView:
-                
-                return AnyView(
-                    WidgetCardListView(
-                        widgetData: widgetData,
-                        appTheme: appTheme,
-                        gptUIPreference: gptUIPreference,
-                        widgetAction: { widgetData in
-                            widgetAction?(widgetData)
-                        },
-                        widgetViewAllResponseAction: { title, widgetData, widgetType in
-                            widgetViewAllResponseAction?(title, widgetData, widgetType)
-                        }
-                    )
+            return AnyView(
+                WidgetCardListView(
+                    messageData: messageData,
+                    appTheme: appTheme,
+                    gptUIPreference: gptUIPreference,
+                    widgetAction: { widgetData in
+                        widgetAction?(widgetData,.cardView)
+                    },
+                    widgetViewAllResponseAction: { title, widgetData, widgetType in
+                        widgetViewAllResponseAction?(title, widgetData, [""], widgetType)
+                    }
                 )
+            )
 
-            case .responseView:
-                return AnyView(
-                    WidgetResponseListView(
-                        widgetData: widgetData,
-                        appTheme: appTheme,
-                        gptUIPreference: gptUIPreference,
-                        isReplied: getRepliedStatusToSuggestions(),
-                        widgetResponseAction: { reply in
-                            widgetResponseAction?(reply)
-                        },
-                        widgetViewAllResponseAction: { title, widgetData, widgetType in
-                            widgetViewAllResponseAction?(title, widgetData, widgetType)
-                        }
-                    )
+        case .productView:
+            return AnyView(
+                WidgetProductListView(
+                    messageData: messageData,
+                    appTheme: appTheme,
+                    gptUIPreference: gptUIPreference,
+                    widgetAction: { widgetData in
+                        widgetAction?(widgetData,.productView)
+                    },
+                    widgetViewAllResponseAction: { title, widgetData, widgetType in
+                        widgetViewAllResponseAction?(title, widgetData, [""], widgetType)
+                    }
                 )
-            default:
-                return AnyView(EmptyView())
-            }
+            )
             
+        case .responseView:
+            return AnyView(
+                WidgetResponseListView(
+                    messageData: messageData,
+                    appTheme: appTheme,
+                    gptUIPreference: gptUIPreference,
+                    isReplied: getRepliedStatusToSuggestions(),
+                    widgetResponseAction: { reply in
+                        widgetResponseAction?(reply)
+                    },
+                    widgetViewAllResponseAction: { title, options, widgetType in
+                        widgetViewAllResponseAction?( title, nil, options, widgetType)
+                    }
+                )
+            )
+        default:
+            return AnyView(EmptyView())
         }
-        return AnyView(EmptyView())
     }
     
     func getRepliedStatusToSuggestions() -> Bool {
@@ -171,12 +181,8 @@ struct MessageView: View {
         
     }
     
-    func getWidgetData() -> [ChatBotWidget] {
-        
-        guard let widgetData = message.messageData?.widgetData, !widgetData.isEmpty else {
-            return []
-        }
-        return widgetData.first?.widget ?? []
+   func getWidgetData() -> [WidgetData] {
+        return message.messageData?.widgetData ?? []
         
     }
     

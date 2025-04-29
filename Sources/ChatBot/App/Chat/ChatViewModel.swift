@@ -7,14 +7,17 @@
 
 import Foundation
 import CryptoKit
+import UIKit
 
-enum WidgetType: String {
-    case cardView = "Card View"
-    case responseView = "Response Flow"
+public enum WidgetType: String {
+    case cardView = "stores"
+    case responseView = "options"
+    case productView = "products"
+    
 }
 
 public protocol ChatBotDelegate {
-    func navigateFromBot(withData: ChatBotWidget?, dismissOnSuccess: @escaping (Bool)->())
+    func navigateFromBot(withData: ChatBotWidget?, type: WidgetType,  dismissOnSuccess: @escaping (Bool)->())
 }
 
 @MainActor
@@ -36,7 +39,9 @@ public class ChatViewModel: ObservableObject {
     @Published var hideSuggestedReplies: Bool = false
     
     var widgetResponseSheetTitle: String = ""
-    var widgetResponseOptions: [ChatBotWidget] = []
+    var widgetResponse: GptClientResponseModel?
+    var widgetOptions: [String] = []
+    var widgetType: WidgetType = .cardView
     
     // MARK: - INITIALIZER
     
@@ -70,6 +75,10 @@ public class ChatViewModel: ObservableObject {
         
         sendMessageTask = Task {
             do {
+                // Agent identifier provided by the backend service
+                // This is used to associate actions with the current agent
+                let agentId = "67a9df239dbfc422720f19b5"
+                
                 let parameters = GPTClientRequestParameters(
                     chatBotId: Int(appConfigurations.chatBotId) ?? 0,
                     message: message,
@@ -77,8 +86,11 @@ public class ChatViewModel: ObservableObject {
                     storeCategoryId: appConfigurations.storeCategoryId,
                     userId: appConfigurations.userId,
                     location: appConfigurations.location,
-                    longitude: appConfigurations.longitude,
-                    latitude: appConfigurations.latitude
+                    longitude: "\(appConfigurations.longitude)",
+                    latitude: "\(appConfigurations.latitude)",
+                    isLoggedIn: false,
+                    fingerPrintId: UIDevice.current.identifierForVendor?.uuidString ?? "Unknown",
+                    agentId: agentId
                 )
                 
                 let data = try await networkMiddleware.performRequest {

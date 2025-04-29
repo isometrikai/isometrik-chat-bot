@@ -2,12 +2,12 @@
 //  SwiftUIView.swift
 //  ChatBot
 //
-//  Created by Appscrip 3Embed on 25/09/24.
+//  Created by Nikunj's M1 on 29/04/25.
 //
 
 import SwiftUI
 
-struct WidgetCardListView: View {
+struct WidgetProductListView: View {
     
     // MARK: - PROPERTIES
     
@@ -28,21 +28,20 @@ struct WidgetCardListView: View {
                 // Loop through the first 3 widgets
                 if let widget = messageData.getCardWidget(){
                     ForEach(widget.prefix(3), id: \.self) { widget in
-                        WidgetCardView(
+                        WidgetProductView(
                             appTheme: appTheme,
-                            widgetData: widget,
-                            gptUIPreference: gptUIPreference
+                            widgetData: widget
                         ) { widget in
                             widgetAction?(widget)
                         }
-                        .frame(width: 250)
+                        .frame(width: 200)
                         .padding(.vertical, 4)
                     }
                     
                     if widget.count > 3 {
                         // Add "View All" button
                         Button {
-                            widgetViewAllResponseAction?("", messageData, .cardView)
+                            widgetViewAllResponseAction?("", messageData, .productView)
                         } label: {
                             ZStack(alignment: .center) {
                                 VStack(alignment: .center) {
@@ -69,3 +68,4 @@ struct WidgetCardListView: View {
     }
     
 }
+

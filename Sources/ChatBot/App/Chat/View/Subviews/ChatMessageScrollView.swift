@@ -19,9 +19,9 @@ struct ChatMessageScrollView: View {
     @FocusState.Binding var isFocused: Bool
     
     var suggestedReplyAction: ((String)->Void)?
-    var widgetAction: ((ChatBotWidget?)->Void)?
+    var widgetAction: ((ChatBotWidget?,WidgetType)->Void)?
     var widgetResponseAction: ((String?)->Void)?
-    var widgetViewAllResponseAction: ((String?, [ChatBotWidget]? , WidgetType)->Void)?
+    var widgetViewAllResponseAction: ((String?, GptClientResponseModel? , [String]? , WidgetType)->Void)?
     
     // MARK: - BODY
     
@@ -48,14 +48,14 @@ struct ChatMessageScrollView: View {
                                 message: message,
                                 chatBotImageUrl: viewModel.myGptSessionData?.data?.first?.profileImage ?? "",
                                 gptUIPreference: viewModel.myGptSessionData?.data?.first?.uiPreferences,
-                                widgetAction: { widget in
-                                    widgetAction?(widget)
+                                widgetAction: { widget, type in
+                                    widgetAction?(widget, type)
                                 },
                                 widgetResponseAction: { reply in
                                     widgetResponseAction?(reply)
                                 },
-                                widgetViewAllResponseAction: { (title, widgetData, widgetType) in
-                                    widgetViewAllResponseAction?(title, widgetData, widgetType)
+                                widgetViewAllResponseAction: { (title, widgetData, options, widgetType) in
+                                    widgetViewAllResponseAction?(title, widgetData, options, widgetType)
                                 }
                             )
                                 .transition(.push(from: .bottom))

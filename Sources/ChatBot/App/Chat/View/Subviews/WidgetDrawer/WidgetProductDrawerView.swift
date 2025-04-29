@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct WidgetCardDrawerView: View {
+struct WidgetProductDrawerView: View {
     
     // MARK: - PROPERTIES
     
@@ -39,46 +39,48 @@ struct WidgetCardDrawerView: View {
                     .padding(.bottom, 15)
                 
                 ScrollView(.vertical, showsIndicators: false) {
-                    VStack(alignment: .leading, spacing: 12) {
-                        if let widget = messageData.getCardWidget() {
+                    if let widget = messageData.getCardWidget() {
+                        // Two-column grid layout with proper padding
+                        LazyVGrid(columns: [
+                            GridItem(.flexible()),
+                            GridItem(.flexible())
+                        ], spacing: 16) {
                             ForEach(widget, id: \.self) { widget in
-                                WidgetCardView(
+                                WidgetProductView(
                                     appTheme: appTheme,
                                     widgetData: widget,
                                     gptUIPreference: gptUIPreference
                                 ) { widget in
-                                    responseCallback?(widget,.cardView)
+                                    responseCallback?(widget,.productView)
                                     dismiss()
                                 }
-                                .frame(maxHeight: 300)
-                                .padding(.horizontal, 16)
-                                .padding(.vertical, 4)
                             }
                         }
-                        
-                        if let options = messageData.getOptionsWidget() {
-                            HStack(spacing: 8) { // Add spacing between buttons if needed
-                                Spacer() // This pushes content to center
-                                ForEach(options, id: \.self) { option in
-                                    Button(action: {
-                                        
-                                    }) {
-                                        Text(option)
-                                            .padding(.vertical, 8)
-                                            .padding(.horizontal, 16)
-                                            .font(.system(size: 14))
-                                            .foregroundColor(.white)
-                                            .overlay {
-                                                getButtonOverlay(isDashed: true, borderColor: Color.white.opacity(0.3))
-                                            }
-                                            .padding(.vertical, 4)
-                                    }
+                        .padding(.horizontal, 16)
+                        .frame(maxWidth: .infinity)
+                    }
+                    
+                    if let options = messageData.getOptionsWidget() {
+                        HStack(spacing: 8) {
+                            Spacer()
+                            ForEach(options, id: \.self) { option in
+                                Button(action: {
+                                    
+                                }) {
+                                    Text(option)
+                                        .padding(.vertical, 8)
+                                        .padding(.horizontal, 16)
+                                        .font(.system(size: 14))
+                                        .foregroundColor(.white)
+                                        .overlay {
+                                            getButtonOverlay(isDashed: true, borderColor: Color.white.opacity(0.3))
+                                        }
+                                        .padding(.vertical, 4)
                                 }
-                                Spacer() // This ensures the content is centered
                             }
-                            .padding(.horizontal, 16) // Add horizontal padding to match the cards above
+                            Spacer()
                         }
-                        }
+                    }
                 } //: SCROLLVIEW
                 .customContentMargins(bottom: 50)
                 
@@ -86,7 +88,5 @@ struct WidgetCardDrawerView: View {
             } //: VSTACK
             .edgesIgnoringSafeArea(.all)
         }
-        
     }
-    
 }

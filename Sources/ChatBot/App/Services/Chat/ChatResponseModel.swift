@@ -7,6 +7,18 @@
 
 import Foundation
 
+public protocol WidgetContent {
+    var type: String? { get }
+}
+
+extension String: WidgetContent {
+    public var type: String? { return "options" }
+}
+
+extension ChatBotWidget: WidgetContent {
+    public var type: String? { return "stores" }
+}
+
 public struct GptClientResponseModel: Decodable {
     
     public let text: String?
@@ -14,14 +26,15 @@ public struct GptClientResponseModel: Decodable {
     public let websiteSource: String?
     //let sources: [JSONAny]?
     public var widgetData: [WidgetData]?
-    public let inputTokenCount, id, parsedRequestID, requestID: Int?
+    public let inputTokenCount, id, parsedRequestID: Int?
+    public let requestID: String?
     
     enum CodingKeys: String, CodingKey {
-        case text
+        case text = "response"
 //        case imageData = "image_data"
         case websiteSource = "website_source"
 //        case sources
-        case widgetData
+        case widgetData = "widgets"
         case inputTokenCount = "input_token_count"
         case id
         case parsedRequestID = "parsed_request_id"
@@ -36,105 +49,370 @@ public struct GptClientResponseModel: Decodable {
         self.inputTokenCount = try container.decodeIfPresent(Int.self, forKey: .inputTokenCount)
         self.id = try container.decodeIfPresent(Int.self, forKey: .id)
         self.parsedRequestID = try container.decodeIfPresent(Int.self, forKey: .parsedRequestID)
-        self.requestID = try container.decodeIfPresent(Int.self, forKey: .requestID)
+        self.requestID = try container.decodeIfPresent(String.self, forKey: .requestID)
+    }
+    
+    func getCardWidget() -> [ChatBotWidget]? {
+        var allChatBotWidgets: [ChatBotWidget] = []
+        
+        guard let widgetData else {return []}
+        // Loop through each element in widgetData
+        for dataElement in widgetData {
+            if let widgetUnions = dataElement.widget {
+                // Extract ChatBotWidget cases and add to our array
+                for widgetUnion in widgetUnions {
+                    if case .widgetClass(let chatBotWidget) = widgetUnion {
+                        allChatBotWidgets.append(chatBotWidget)
+                    }
+                }
+            }
+        }
+        
+        // Return nil if no ChatBotWidget found, otherwise return the array
+        return allChatBotWidgets.isEmpty ? nil : allChatBotWidgets
+    }
+    
+    func getOptionsWidget() -> [String]? {
+        var allChatBotWidgets: [String] = []
+        
+        guard let widgetData else {return []}
+        
+        // Loop through each element in widgetData
+        for dataElement in widgetData {
+            if let widgetUnions = dataElement.widget {
+                // Extract ChatBotWidget cases and add to our array
+                for widgetUnion in widgetUnions {
+                    if case .string(let chatBotWidget) = widgetUnion {
+                        allChatBotWidgets.append(chatBotWidget)
+                    }
+                }
+            }
+        }
+        
+        // Return nil if no ChatBotWidget found, otherwise return the array
+        return allChatBotWidgets.isEmpty ? nil : allChatBotWidgets
     }
     
 }
 
-public struct WidgetData: Decodable, Hashable {
+public struct WidgetData: Codable, Hashable {
     
     public let widgetId: Int?
     public let type: String?
-    public let widget: [ChatBotWidget]?
+    public let widget: [WidgetUnion]?
     public var repliedStatusToSuggestions: Bool = false
     
     enum CodingKeys: String, CodingKey {
         case widgetId
-        case type, widget
+        case type
+        case widget
     }
     
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.widgetId = try container.decodeIfPresent(Int.self, forKey: .widgetId)
         self.type = try container.decodeIfPresent(String.self, forKey: .type)
-        self.widget = try container.decodeIfPresent([ChatBotWidget].self, forKey: .widget)
+        self.widget = try container.decodeIfPresent([WidgetUnion].self, forKey: .widget)
     }
-    
 }
 
-public struct ChatBotWidget: Decodable, Hashable {
+public enum WidgetUnion: Codable, Hashable {
+    case string(String)
+    case widgetClass(ChatBotWidget)
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        if let x = try? container.decode(String.self) {
+            self = .string(x)
+            return
+        }
+        if let x = try? container.decode(ChatBotWidget.self) {
+            self = .widgetClass(x)
+            return
+        }
+        throw DecodingError.typeMismatch(WidgetUnion.self, DecodingError.Context(codingPath: decoder.codingPath, debugDescription: "Wrong type for WidgetUnion"))
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+        switch self {
+        case .string(let x):
+            try container.encode(x)
+        case .widgetClass(let x):
+            try container.encode(x)
+        }
+    }
+}
+
+public struct ChatBotWidget: Codable, Hashable {
     
-    public var id: UUID = UUID()
+    // Stores
+    
+    public var id, storename: String?
+    public var avgRating: Double?
+    public var storeIsOpen: Bool?
+    public var storeTag: String?
+    public var logoImages: LogoImages?
+    public var isTempClose: Bool?
+    public var address: StoreAddress?
+    public var cuisineDetails: String?
+    public var storeImage: String?
+    public var distanceKM, distanceMiles: Double?
+    public var tableReservations: Bool?
+    public var supportedOrderTypes, averageCostForMealForTwo: Int?
+    public var currencyCode: String?
+    public var currencySymbol: String?
+    public var price: String?
     public var imageURL: String?
     public let productID: String?
-    public var title: String?
     public let description: String?
     public let subtitle, buttontext: String?
     public let link: String?
     public let actionHandler: String?
-    public var price: String?
-    public let tableReservations: Bool?
-    public var supportedOrderTypes, averageCost: Int?
-    public let currencyCode: String?
+    public var averageCost: Int?
     public var discountPrice: String?
-    public var averageRating: Double?
     public var storeId: String?
     public var actionText: String?
+
+    
+    // Products
+    public var productName: String?
+    public var finalPrice: Double?
+    public var inStock: Bool?
+    public var tag: Int?
+    public var finalPriceList: FinalPriceList?
+    public var productImage: String?
+    public var averageRating: Double?
+    public var currency: String?
     
     enum CodingKeys: String, CodingKey {
         case imageURL
         case productID = "productId"
-        case title, description, subtitle, buttontext, link, actionHandler, price
-        case tableReservations = "table_reservations"
-        case supportedOrderTypes = "supported_order_types"
+        case description, subtitle, buttontext, link, actionHandler
         case averageCost = "average_cost"
-        case currencyCode = "currency_code"
         case discountPrice = "discount_price"
-        case averageRating = "avg_rating"
         case storeId = "store_id"
         case actionText
+        case id
+        case storename
+        case avgRating
+        case storeIsOpen = "store_is_open"
+        case storeTag = "store_tag"
+        case logoImages
+        case isTempClose = "is_temp_close"
+        case address
+        case cuisineDetails
+        case storeImage
+        case distanceKM = "distance_km"
+        case distanceMiles = "distance_miles"
+        case tableReservations
+        case supportedOrderTypes
+        case averageCostForMealForTwo
+        case currencyCode
+        case currencySymbol
+        case price
+        case productName
+        case finalPrice
+        case inStock
+        case tag
+        case finalPriceList
+        case productImage = "product_image"
+        case averageRating = "average_rating"
+        case currency
+        
     }
     
-    public init(imageURL: String?, title: String?, subtitle: String?, price: String?, currencyCode: String?, averageCost:Int?, supportedOrderTypes: Int?, actionText: String?) {
-        self.id = UUID()
-        self.imageURL = imageURL
-        self.productID = nil
-        self.title = title
-        self.description = nil
-        self.subtitle = subtitle
-        self.buttontext = nil
-        self.link = nil
-        self.actionHandler = nil
-        self.price = price
-        self.tableReservations = nil
+    public init(id: String? = nil,
+                storename: String? = nil,
+                avgRating: Double? = nil,
+                storeIsOpen: Bool? = nil,
+                storeTag: String? = nil,
+                logoImages: LogoImages? = nil,
+                isTempClose: Bool? = nil,
+                address: StoreAddress? = nil,
+                cuisineDetails: String? = nil,
+                storeImage: String? = nil,
+                distanceKM: Double? = nil,
+                distanceMiles: Double? = nil,
+                tableReservations: Bool? = nil,
+                supportedOrderTypes: Int? = nil,
+                averageCostForMealForTwo: Int? = nil,
+                currencyCode: String? = nil,
+                currencySymbol: String? = nil,
+                price: String? = nil,
+                productName: String? = nil,
+                finalPrice: Double? = nil,
+                inStock: Bool? = nil,
+                tag: Int? = nil,
+                finalPriceList: FinalPriceList? = nil,
+                productImage: String? = nil,
+                averageRating: Double? = nil,
+                currency: String? = nil,
+                imageURL: String? = nil,
+                productID: String? = nil,
+                description: String? = nil,
+                subtitle: String? = nil,
+                buttontext: String? = nil,
+                link: String? = nil,
+                actionHandler: String? = nil,
+                averageCost: Int? = nil,
+                discountPrice: String? = nil,
+                storeId: String? = nil,
+                actionText: String? = nil
+    ) {
+        self.id = id
+        self.storename = storename
+        self.avgRating = avgRating
+        self.storeIsOpen = storeIsOpen
+        self.storeTag = storeTag
+        self.logoImages = logoImages
+        self.isTempClose = isTempClose
+        self.address = address
+        self.cuisineDetails = cuisineDetails
+        self.storeImage = storeImage
+        self.distanceKM = distanceKM
+        self.distanceMiles = distanceMiles
+        self.tableReservations = tableReservations
         self.supportedOrderTypes = supportedOrderTypes
-        self.averageCost = averageCost
+        self.averageCostForMealForTwo = averageCostForMealForTwo
         self.currencyCode = currencyCode
-        self.discountPrice = nil
-        self.actionText = nil
+        self.currencySymbol = currencySymbol
+        self.price = price
+        self.productName = productName
+        self.finalPrice = finalPrice
+        self.inStock = inStock
+        self.tag = tag
+        self.finalPriceList = finalPriceList
+        self.productImage = productImage
+        self.averageRating = averageRating
+        self.currency = currency
+        self.imageURL = imageURL
+        self.productID = productID
+        self.description = description
+        self.subtitle = subtitle
+        self.buttontext = buttontext
+        self.link = link
+        self.actionHandler = actionHandler
+        self.averageCost = averageCost
+        self.discountPrice = discountPrice
+        self.storeId = storeId
+        self.actionText = actionText
     }
     
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.id = try container.decodeIfPresent(String.self, forKey: .id)
+        self.storename = try container.decodeIfPresent(String.self, forKey: .storename)
+        self.avgRating = try container.decodeIfPresent(Double.self, forKey: .avgRating)
+        self.storeIsOpen = try container.decodeIfPresent(Bool.self, forKey: .storeIsOpen)
+        self.storeTag = try container.decodeIfPresent(String.self, forKey: .storeTag)
+        self.logoImages = try container.decodeIfPresent(LogoImages.self, forKey: .logoImages)
+        self.isTempClose = try container.decodeIfPresent(Bool.self, forKey: .isTempClose)
+        self.address = try container.decodeIfPresent(StoreAddress.self, forKey: .address)
+        self.cuisineDetails = try container.decodeIfPresent(String.self, forKey: .cuisineDetails)
+        self.storeImage = try container.decodeIfPresent(String.self, forKey: .storeImage)
+        self.distanceKM = try container.decodeIfPresent(Double.self, forKey: .distanceKM)
+        self.distanceMiles = try container.decodeIfPresent(Double.self, forKey: .distanceMiles)
+        self.tableReservations = try container.decodeIfPresent(Bool.self, forKey: .tableReservations)
+        self.supportedOrderTypes = try container.decodeIfPresent(Int.self, forKey: .supportedOrderTypes)
+        self.averageCostForMealForTwo = try container.decodeIfPresent(Int.self, forKey: .averageCostForMealForTwo)
+        self.currencyCode = try container.decodeIfPresent(String.self, forKey: .currencyCode)
+        self.currencySymbol = try container.decodeIfPresent(String.self, forKey: .currencySymbol)
+        self.price = try container.decodeIfPresent(String.self, forKey: .price)
+        self.productName = try container.decodeIfPresent(String.self, forKey: .productName)
+        self.finalPrice = try container.decodeIfPresent(Double.self, forKey: .finalPrice)
+        self.inStock = try container.decodeIfPresent(Bool.self, forKey: .inStock)
+        self.tag = try container.decodeIfPresent(Int.self, forKey: .tag)
+        self.finalPriceList = try container.decodeIfPresent(FinalPriceList.self, forKey: .finalPriceList)
+        self.productImage = try container.decodeIfPresent(String.self, forKey: .productImage)
+        self.averageRating = try container.decodeIfPresent(Double.self, forKey: .averageRating)
+        self.currency = try container.decodeIfPresent(String.self, forKey: .currency)
         self.imageURL = try container.decodeIfPresent(String.self, forKey: .imageURL)
         self.productID = try container.decodeIfPresent(String.self, forKey: .productID)
-        self.title = try container.decodeIfPresent(String.self, forKey: .title)
         self.description = try container.decodeIfPresent(String.self, forKey: .description)
         self.subtitle = try container.decodeIfPresent(String.self, forKey: .subtitle)
         self.buttontext = try container.decodeIfPresent(String.self, forKey: .buttontext)
         self.link = try container.decodeIfPresent(String.self, forKey: .link)
         self.actionHandler = try container.decodeIfPresent(String.self, forKey: .actionHandler)
-        self.price = try container.decodeIfPresent(String.self, forKey: .price)
-        self.tableReservations = try container.decodeIfPresent(Bool.self, forKey: .tableReservations)
-        self.supportedOrderTypes = try container.decodeIfPresent(Int.self, forKey: .supportedOrderTypes)
         self.averageCost = try container.decodeIfPresent(Int.self, forKey: .averageCost)
-        self.currencyCode = try container.decodeIfPresent(String.self, forKey: .currencyCode)
         self.discountPrice = try container.decodeIfPresent(String.self, forKey: .discountPrice)
-        self.averageRating = try container.decodeIfPresent(Double.self, forKey: .averageRating)
         self.storeId = try container.decodeIfPresent(String.self, forKey: .storeId)
         self.actionText = try container.decodeIfPresent(String.self, forKey: .actionText)
+
     }
+}
+
+enum OfferTypeDiscount: Int, Codable, Hashable {
+    case flatDiscount = 0
+    case percentageDiscount = 1
+    case combo = 2
+}
+
+public struct FinalPriceList:Codable,Hashable{
+    let finalPrice:Double?
+    let discountPercentage:Int?
+    let basePrice:Double?
+    let discountPrice:Double?
+    let sellerPrice:Double?
+    var msrpPrice: Double?
+    let discount : Double?
+    let taxRate : Double?
+    var discountType: OfferTypeDiscount?
     
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        finalPrice = try container.decodeIfPresent(Double.self, forKey: .finalPrice)
+        discountPercentage = try? container.decodeIfPresent(Int.self, forKey: .discountPercentage)
+        basePrice = try container.decodeIfPresent(Double.self, forKey: .basePrice)
+        discountPrice = try container.decodeIfPresent(Double.self, forKey: .discountPrice)
+        sellerPrice = try? container.decodeIfPresent(Double.self, forKey: .sellerPrice)
+        msrpPrice = try? container.decodeIfPresent(Double.self, forKey: .msrpPrice)
+        discount = try? container.decodeIfPresent(Double.self, forKey: .discount)
+        discountType = try? container.decodeIfPresent(OfferTypeDiscount.self, forKey: .discountType)
+        if msrpPrice == nil{
+            msrpPrice = basePrice
+        }
+        taxRate = try? container.decodeIfPresent(Double.self, forKey: .taxRate)
+    }
+}
+
+public struct StoreAddress: Codable, Hashable {
+    public let addressLine1: String?
+    public let addressLine2: String?
+    public let addressArea: String?
+    public let city: String?
+    public let postCode: String?
+    public let state: String?
+    public let lat: String?
+    public let long: String?
+    public let address: String?
+    public let country: String?
+    public let googlePlaceName: String?
+    public let areaOrDistrict: String?
+    public let locality: String?
+    
+    enum CodingKeys: String, CodingKey {
+        case addressLine1
+        case addressLine2
+        case addressArea
+        case city
+        case postCode
+        case state
+        case lat
+        case long
+        case address
+        case country
+        case googlePlaceName
+        case areaOrDistrict
+        case locality
+    }
+}
+
+// MARK: - LogoImages
+public struct LogoImages: Codable, Hashable {
+    let logoImageMobile, logoImageThumb, logoImageweb: String?
+    let logoMobileFilePath, profileimgeFilePath, twitterfilePath, opengraphfilePath: String?
+    let logofilePath, facebookfilePath, socialgraphfilePath, logoFilePath: String?
 }
 
 // MARK: - My GPTs Response model

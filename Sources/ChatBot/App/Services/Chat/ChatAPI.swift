@@ -8,7 +8,7 @@
 import Foundation
 
 enum ChatAPI {
-    case GPTClientMsg
+    case AgentChat
     case MyGPTs
 }
 
@@ -16,7 +16,7 @@ extension ChatAPI: APIProtocol {
     
     func httpMthodType() -> HTTPMethodType {
         switch self {
-        case .GPTClientMsg: return .post
+        case .AgentChat: return .post
         case .MyGPTs: return .get
         }
     }
@@ -25,8 +25,8 @@ extension ChatAPI: APIProtocol {
         var path = "/v1"
         
         switch self {
-        case .GPTClientMsg:
-            path += "/gptClientMsg"
+        case .AgentChat:
+            path += "/eazy/agent-chat"
         case .MyGPTs:
             path += "/guest/mygpts"
         }
