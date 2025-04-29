@@ -51,8 +51,8 @@ struct WidgetProductDrawerView: View {
                                     widgetData: widget,
                                     gptUIPreference: gptUIPreference
                                 ) { widget in
-                                    responseCallback?(widget,.productView)
                                     dismiss()
+                                    responseCallback?(widget,.productView)
                                 }
                             }
                         }
