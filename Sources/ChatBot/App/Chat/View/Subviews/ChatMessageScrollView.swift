@@ -21,7 +21,7 @@ struct ChatMessageScrollView: View {
     var suggestedReplyAction: ((String)->Void)?
     var widgetAction: ((ChatBotWidget?)->Void)?
     var widgetResponseAction: ((String?)->Void)?
-    var widgetViewAllResponseAction: ((String?, [WidgetData]? , [String]? , WidgetType)->Void)?
+    var widgetViewAllResponseAction: ((String?, GptClientResponseModel? , [String]? , WidgetType)->Void)?
     
     // MARK: - BODY
     

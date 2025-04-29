@@ -24,6 +24,7 @@ struct ChatView: View {
     @State private var showAlertForResetingSession: Bool = false
     @State private var showViewAllWidgetForResponseOptions: Bool = false
     @State private var showViewAllWidgetForCard: Bool = false
+    @State private var showViewAllWidgetForProduct: Bool = false
     
     private var isTrailingActionEnabled: Binding<Bool> {
         Binding(
@@ -113,15 +114,30 @@ struct ChatView: View {
                 .presentationDetents([.fraction(0.7)])
             }
             .sheet(isPresented: $showViewAllWidgetForCard) {
-                WidgetCardDrawerView(
-                    title: viewModel.widgetResponseSheetTitle,
-                    widgetData: viewModel.widgetResponseOptions,
-                    type: viewModel.widgetType,
-                    appTheme: viewModel.appConfigurations.appTheme,
-                    gptUIPreference: viewModel.myGptSessionData?.data?.first?.uiPreferences,
-                    responseCallback: handleWidgetAction
-                )
-                .presentationDetents([.fraction(0.7)])
+                if let messsageData = viewModel.widgetResponse {
+                    WidgetCardDrawerView(
+                        title: viewModel.widgetResponseSheetTitle,
+                        messageData: messsageData,
+                        appTheme: viewModel.appConfigurations.appTheme,
+                        gptUIPreference: viewModel.myGptSessionData?.data?.first?.uiPreferences,
+                        responseCallback: handleWidgetAction
+                    )
+                    .presentationDetents([.fraction(0.7)])
+                }
+                
+            }
+            .sheet(isPresented: $showViewAllWidgetForProduct) {
+                if let messsageData = viewModel.widgetResponse {
+                    WidgetProductDrawerView(
+                        title: viewModel.widgetResponseSheetTitle,
+                        messageData: messsageData,
+                        appTheme: viewModel.appConfigurations.appTheme,
+                        gptUIPreference: viewModel.myGptSessionData?.data?.first?.uiPreferences,
+                        responseCallback: handleWidgetAction
+                    )
+                    .presentationDetents([.fraction(0.7)])
+                }
+                
             }
             .onAppear {
                 if let reply = viewModel.withReply, !reply.isEmpty {
@@ -176,15 +192,19 @@ struct ChatView: View {
         HapticFeedbackManager.shared.triggerSelection()
     }
     
-    private func handleWidgetViewAllResponseAction(title: String?, widgets: [WidgetData]?, options: [String]?, widgetType: WidgetType){
+    private func handleWidgetViewAllResponseAction(title: String?, response: GptClientResponseModel?, options: [String]?, widgetType: WidgetType){
         
         guard let title else { return }
         
-        if let widgets, !widgets.isEmpty {
-            viewModel.widgetResponseOptions = widgets
+        if let response {
+            viewModel.widgetResponse = response
             viewModel.widgetResponseSheetTitle = title
             viewModel.widgetType = widgetType
-            showViewAllWidgetForCard = true
+            if widgetType == .cardView {
+                showViewAllWidgetForCard = true
+            }else if widgetType == .productView{
+                showViewAllWidgetForProduct = true
+            }
             HapticFeedbackManager.shared.triggerImpact(style: .heavy)
         }else if let options {
             viewModel.widgetOptions = options

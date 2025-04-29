@@ -19,7 +19,7 @@ struct MessageView: View {
     
     var widgetAction: ((ChatBotWidget?)->Void)?
     var widgetResponseAction: ((String?)->Void)?
-    var widgetViewAllResponseAction: ((String?, [WidgetData]? , [String]? , WidgetType)->Void)?
+    var widgetViewAllResponseAction: ((String?, GptClientResponseModel? , [String]? , WidgetType)->Void)?
     
     private var leadingPadding: CGFloat {
         message.isFromUser ? 40 : 0
@@ -107,15 +107,14 @@ struct MessageView: View {
     
     private func handleWidgets() -> some View {
         let widgetType = getWidgetType()
-        let widgetData = getWidgetData()
+        guard let messageData = message.messageData else {return AnyView(EmptyView())}
         
         switch widgetType {
-        case .cardView, .productView:
+        case .cardView:
             
             return AnyView(
                 WidgetCardListView(
-                    widgetData: widgetData,
-                    type: widgetType ?? .cardView,
+                    messageData: messageData,
                     appTheme: appTheme,
                     gptUIPreference: gptUIPreference,
                     widgetAction: { widgetData in
@@ -127,10 +126,25 @@ struct MessageView: View {
                 )
             )
 
+        case .productView:
+            return AnyView(
+                WidgetProductListView(
+                    messageData: messageData,
+                    appTheme: appTheme,
+                    gptUIPreference: gptUIPreference,
+                    widgetAction: { widgetData in
+                        widgetAction?(widgetData)
+                    },
+                    widgetViewAllResponseAction: { title, widgetData, widgetType in
+                        widgetViewAllResponseAction?(title, widgetData, [""], widgetType)
+                    }
+                )
+            )
+            
         case .responseView:
             return AnyView(
                 WidgetResponseListView(
-                    widgetData: widgetData,
+                    messageData: messageData,
                     appTheme: appTheme,
                     gptUIPreference: gptUIPreference,
                     isReplied: getRepliedStatusToSuggestions(),
@@ -138,7 +152,7 @@ struct MessageView: View {
                         widgetResponseAction?(reply)
                     },
                     widgetViewAllResponseAction: { title, options, widgetType in
-                        widgetViewAllResponseAction?( title, [], options, widgetType)
+                        widgetViewAllResponseAction?( title, nil, options, widgetType)
                     }
                 )
             )

@@ -26,133 +26,135 @@ struct WidgetCardView: View {
     @Environment(\.customScheme) var colorScheme
     var appTheme: AppTheme
     var widgetData: ChatBotWidget?
-    var type: WidgetType = .cardView
     var gptUIPreference: MyGptUIPreferences?
     var widgetTappedAction: ((ChatBotWidget?) -> Void)?
     
     // MARK: - BODY
     
     var body: some View {
-        ZStack(alignment: .topLeading) {
-            VStack(alignment: .leading, spacing: 0) {
-                
-                ZStack(alignment: .bottomTrailing) {
-                    ZStack(alignment: .center) {
-                        Rectangle()
-                            .fill(Color.gray.opacity(0.2))
-                        URLImageView(url: getImageURL())
-                            .scaledToFill()
-                            .clipped()
-                    }
-                    .frame(height: 150)
-                    
-                    if type == .cardView {
-                        getSupportedOrderTypeViews(orderType: widgetData?.supportedOrderTypes ?? 0)
-                    }
-                    
-                }
-                .frame(maxWidth: .infinity)
-                .clipped()
-                
+        Button {
+            widgetTappedAction?(widgetData)
+        } label: {
+            ZStack(alignment: .topLeading) {
                 VStack(alignment: .leading, spacing: 0) {
-                    HStack(alignment: .top, spacing: 5, content: {
-                        Text(getItemName())
-                            .foregroundColor(colorScheme == .dark ? .white : .black)
-                            .font(.system(size: 14, weight: .bold))
-                            .multilineTextAlignment(.leading)
-                            .lineLimit(1)
-                    })
-                    .padding(.bottom, 5)
                     
-                    if type == .cardView, let distanceMiles = widgetData?.distanceMiles, let addressArea = widgetData?.address?.addressArea {
-                        HStack {
-                            HStack(spacing: 4) {
-                                appTheme.theme.images.locationPin
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(width: 10, height: 10)
-                                    .foregroundColor(.gray)
-                                Text("\(addressArea) • \(distanceMiles, specifier: "%.1f") mi")
-                                    .font(.system(size: 10))
-                                    .foregroundColor(.gray)
-                                    .lineLimit(1)
-                            }
-                            
-                            Spacer()
+                    ZStack(alignment: .bottomTrailing) {
+                        ZStack(alignment: .center) {
+                            Rectangle()
+                                .fill(Color.gray.opacity(0.2))
+                            URLImageView(url: getImageURL())
+                                .scaledToFill()
+                                .clipped()
                         }
-                        .padding(.bottom, 10)
+                        .frame(height: 150)
+                        
+                        getSupportedOrderTypeViews(orderType: widgetData?.supportedOrderTypes ?? 0)
+                        
                     }
+                    .frame(maxWidth: .infinity)
+                    .clipped()
                     
-                    
-                    
-                    HStack(alignment: .top, spacing: 5, content: {
+                    VStack(alignment: .leading, spacing: 0) {
+                        HStack(alignment: .top, spacing: 5, content: {
+                            Text(getItemName())
+                                .foregroundColor(colorScheme == .dark ? .white : .black)
+                                .font(.system(size: 14, weight: .bold))
+                                .multilineTextAlignment(.leading)
+                                .lineLimit(1)
+                        })
+                        .padding(.bottom, 5)
+                        
+                        if let distanceMiles = widgetData?.distanceMiles, let addressArea = widgetData?.address?.addressArea {
+                            HStack {
+                                HStack(spacing: 4) {
+                                    appTheme.theme.images.locationPin
+                                        .resizable()
+                                        .scaledToFit()
+                                        .frame(width: 10, height: 10)
+                                        .foregroundColor(.gray)
+                                    Text("\(addressArea) • \(distanceMiles, specifier: "%.1f") mi")
+                                        .font(.system(size: 10))
+                                        .foregroundColor(.gray)
+                                        .lineLimit(1)
+                                }
+                                
+                                Spacer()
+                            }
+                            .padding(.bottom, 10)
+                        }
                         
                         
-                        if type == .cardView, let currencyCode = widgetData?.currencyCode {
-                            if let price = getPrice(), let originalPrice = getOriginalPrice() {
-                                HStack(alignment: .top) {
-                                    Text("\(currencyCode) \(price) for Two")
+                        
+                        HStack(alignment: .top, spacing: 5, content: {
+                            
+                            
+                            if let currencyCode = widgetData?.currencyCode {
+                                if let price = getPrice(), let originalPrice = getOriginalPrice() {
+                                    HStack(alignment: .top) {
+                                        Text("\(currencyCode) \(price) for Two")
+                                            .font(.system(size: 12))
+                                            .foregroundStyle(colorScheme == .dark ? .white : .black.opacity(0.7))
+                                            .layoutPriority(0) // Lower priority, can be compressed if needed
+                                        
+                                        Spacer(minLength: 8) // Ensure minimum spacing
+                                        
+                                        if let storeTag = widgetData?.storeTag {
+                                            let status = parseStoreTag(tag: storeTag)
+                                            StatusBadgeView(status: status.status, opensAt: status.opensAt)
+                                                .layoutPriority(1) // Higher priority to avoid truncation
+                                        }
+                                    }
+                                    
+                                }
+                            } else {
+                                if let price = getPrice() as? Double, let originalPrice = getOriginalPrice() as? Double, let currencyCode = widgetData?.currency{
+                                    Text("\(currencyCode) \(price, specifier: "%.2f")")
                                         .font(.system(size: 12))
                                         .foregroundStyle(colorScheme == .dark ? .white : .black.opacity(0.7))
-                                        .layoutPriority(0) // Lower priority, can be compressed if needed
-                                    
-                                    Spacer(minLength: 8) // Ensure minimum spacing
-                                    
-                                    if type == .cardView, let storeTag = widgetData?.storeTag {
-                                        let status = parseStoreTag(tag: storeTag)
-                                        StatusBadgeView(status: status.status, opensAt: status.opensAt)
-                                            .layoutPriority(1) // Higher priority to avoid truncation
+                                    if price != originalPrice {
+                                        Text("\(currencyCode) \(originalPrice, specifier: "%.2f")")
+                                            .font(.system(size: 12))
+                                            .foregroundStyle(Color.gray)
+                                            .strikethrough()
                                     }
                                 }
                                 
+                                
                             }
-                        } else {
-                            if let price = getPrice() as? Double, let originalPrice = getOriginalPrice() as? Double, let currencyCode = widgetData?.currency{
-                                Text("\(currencyCode) \(price, specifier: "%.2f")")
-                                    .font(.system(size: 12))
-                                    .foregroundStyle(colorScheme == .dark ? .white : .black.opacity(0.7))
-                                if price != originalPrice {
-                                    Text("\(currencyCode) \(originalPrice, specifier: "%.2f")")
-                                        .font(.system(size: 12))
-                                        .foregroundStyle(Color.gray)
-                                        .strikethrough()
-                                }
-                            }
-                            
-                            
+                        })
+                        
+                        if let cuisineDetails = widgetData?.cuisineDetails {
+                            Text(cuisineDetails)
+                                .font(.system(size: 10))
+                                .foregroundColor(.gray)
+                                .lineLimit(1)
                         }
-                    })
-                    
-                    if let cuisineDetails = widgetData?.cuisineDetails {
-                        Text(cuisineDetails)
-                            .font(.system(size: 10))
-                            .foregroundColor(.gray)
-                            .lineLimit(1)
+                        
+        //                if widgetData?.buttontext != nil {
+        //                    self.getActionButton()
+        //                }
+        //                self.getActionButton()
                     }
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 8)
                     
-    //                if widgetData?.buttontext != nil {
-    //                    self.getActionButton()
-    //                }
-    //                self.getActionButton()
                 }
-                .padding(.horizontal, 8)
-                .padding(.vertical, 8)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(appTheme.theme.colors.primaryBackgroundColor(for: colorScheme))
+                .cornerRadius(6)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 6)
+                        .stroke(Color.gray.opacity(0.2), lineWidth: 1)
+                )
                 
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(appTheme.theme.colors.primaryBackgroundColor(for: colorScheme))
-            .cornerRadius(6)
-            .overlay(
-                RoundedRectangle(cornerRadius: 6)
-                    .stroke(Color.gray.opacity(0.2), lineWidth: 1)
-            )
-            
-            // Rating badge overlay at top-leading position
-            if let averageRating = getAverageRating(), type == .cardView {
-                RatingBadge(rating: averageRating)
-                    .padding(8)
+                // Rating badge overlay at top-leading position
+                if let averageRating = getAverageRating() {
+                    RatingBadge(rating: averageRating)
+                        .padding(8)
+                }
             }
         }
+
         
     }
     
@@ -162,79 +164,28 @@ struct WidgetCardView: View {
     private func getImageURL() -> URL {
         let defaultURL = URL(string: "https://i.sstatic.net/frlIf.png")
         
-        switch type {
-        case .cardView:
-            return URL(string: widgetData?.logoImages?.logoImageMobile ?? "") ?? defaultURL!
-        case .productView:
-            return URL(string: widgetData?.productImage ?? "") ?? defaultURL!
-        default:
-            return defaultURL!
-        }
+        return URL(string: widgetData?.logoImages?.logoImageMobile ?? "") ?? defaultURL!
     }
     
     private func getItemName() -> String {
-        switch type {
-        case .cardView:
-            return widgetData?.storename ?? "Store"
-        case .productView:
-            return widgetData?.productName ?? "Product"
-        default:
-            return "Item"
-        }
+        return widgetData?.storename ?? "Store"
     }
     
     private func getAverageRating() -> Double? {
-        switch type {
-        case .cardView:
-            return widgetData?.avgRating
-        case .productView:
-            return widgetData?.averageRating
-        default:
-            return nil
-        }
+        return widgetData?.avgRating
     }
     
     private func getPrice() -> Any? {
-        switch type {
-        case .cardView:
-            return widgetData?.averageCostForMealForTwo
-        case .productView:
-            return widgetData?.finalPriceList?.finalPrice
-        default:
-            return nil
-        }
+        return widgetData?.averageCostForMealForTwo
     }
     
     private func getOriginalPrice() -> Any? {
-        switch type {
-        case .cardView:
-            if let price = widgetData?.averageCostForMealForTwo {
-                return price + 10
-            }
-            return nil
-        case .productView:
-            return widgetData?.finalPriceList?.basePrice
-        default:
-            return nil
+        if let price = widgetData?.averageCostForMealForTwo {
+            return price + 10
         }
+        return nil
     }
                          
-    func getDescriptionText() -> String {
-        guard let widget = widgetData else {
-            return "No data available"
-        }
-        
-        let price = widget.price ?? "0.0"
-        let averageCost = widget.averageCostForMealForTwo ?? 4
-        let currencyCode = widget.currencyCode ?? "AED"
-        let averageRating = String(format: "%.1f", widget.avgRating ?? 0)
-        
-        if averageCost != 0 {
-            return "\(averageRating) ⭐ • \(currencyCode) \(averageCost) for two"
-        }
-        
-        return price
-    }
     
     func getSupportedOrderTypeViews(orderType: Int) -> some View {
         let orderTypes = SupportedOrderTypes(rawValue: orderType)

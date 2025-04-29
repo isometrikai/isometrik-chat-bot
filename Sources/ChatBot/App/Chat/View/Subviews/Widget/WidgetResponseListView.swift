@@ -11,7 +11,7 @@ struct WidgetResponseListView: View {
     
     // MARK: - PROPERTIES
     
-    var widgetData: [WidgetData]
+    var messageData: GptClientResponseModel
     var appTheme: AppTheme
     var gptUIPreference: MyGptUIPreferences?
     var isReplied: Bool
@@ -28,7 +28,7 @@ struct WidgetResponseListView: View {
                 LazyHStack(spacing: 12) {
                     
                     // Loop through the first 3 widgets
-                    if let options = getOptionsWidget() {
+                    if let options = messageData.getOptionsWidget() {
                         ForEach(options.prefix(3), id: \.self) { option in
                             Button {
                                 widgetResponseAction?(option)
@@ -71,25 +71,6 @@ struct WidgetResponseListView: View {
             .customContentMargins(leading: 65, trailing: 16)
         }
         
-    }
-    
-    func getOptionsWidget() -> [String]? {
-        var allChatBotWidgets: [String] = []
-        
-        // Loop through each element in widgetData
-        for dataElement in widgetData {
-            if let widgetUnions = dataElement.widget {
-                // Extract ChatBotWidget cases and add to our array
-                for widgetUnion in widgetUnions {
-                    if case .string(let chatBotWidget) = widgetUnion {
-                        allChatBotWidgets.append(chatBotWidget)
-                    }
-                }
-            }
-        }
-        
-        // Return nil if no ChatBotWidget found, otherwise return the array
-        return allChatBotWidgets.isEmpty ? nil : allChatBotWidgets
     }
     
 }

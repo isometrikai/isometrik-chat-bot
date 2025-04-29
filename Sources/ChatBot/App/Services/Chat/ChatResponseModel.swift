@@ -52,6 +52,47 @@ public struct GptClientResponseModel: Decodable {
         self.requestID = try container.decodeIfPresent(String.self, forKey: .requestID)
     }
     
+    func getCardWidget() -> [ChatBotWidget]? {
+        var allChatBotWidgets: [ChatBotWidget] = []
+        
+        guard let widgetData else {return []}
+        // Loop through each element in widgetData
+        for dataElement in widgetData {
+            if let widgetUnions = dataElement.widget {
+                // Extract ChatBotWidget cases and add to our array
+                for widgetUnion in widgetUnions {
+                    if case .widgetClass(let chatBotWidget) = widgetUnion {
+                        allChatBotWidgets.append(chatBotWidget)
+                    }
+                }
+            }
+        }
+        
+        // Return nil if no ChatBotWidget found, otherwise return the array
+        return allChatBotWidgets.isEmpty ? nil : allChatBotWidgets
+    }
+    
+    func getOptionsWidget() -> [String]? {
+        var allChatBotWidgets: [String] = []
+        
+        guard let widgetData else {return []}
+        
+        // Loop through each element in widgetData
+        for dataElement in widgetData {
+            if let widgetUnions = dataElement.widget {
+                // Extract ChatBotWidget cases and add to our array
+                for widgetUnion in widgetUnions {
+                    if case .string(let chatBotWidget) = widgetUnion {
+                        allChatBotWidgets.append(chatBotWidget)
+                    }
+                }
+            }
+        }
+        
+        // Return nil if no ChatBotWidget found, otherwise return the array
+        return allChatBotWidgets.isEmpty ? nil : allChatBotWidgets
+    }
+    
 }
 
 public struct WidgetData: Codable, Hashable {

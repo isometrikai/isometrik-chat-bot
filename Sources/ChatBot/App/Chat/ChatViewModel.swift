@@ -39,7 +39,7 @@ public class ChatViewModel: ObservableObject {
     @Published var hideSuggestedReplies: Bool = false
     
     var widgetResponseSheetTitle: String = ""
-    var widgetResponseOptions: [WidgetData] = []
+    var widgetResponse: GptClientResponseModel?
     var widgetOptions: [String] = []
     var widgetType: WidgetType = .cardView
     
