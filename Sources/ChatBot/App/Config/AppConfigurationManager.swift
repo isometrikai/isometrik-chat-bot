@@ -18,6 +18,7 @@ public class AppConfigurationManager {
     public let location: String
     public let latitude: Float
     public let longitude: Float
+    public let categoryName: String
     
     public init(
         chatBotId: String,
@@ -28,7 +29,8 @@ public class AppConfigurationManager {
         appTheme: AppTheme = AppTheme(),
         location: String,
         latitude: Float = 0,
-        longitude: Float = 0
+        longitude: Float = 0,
+        categoryName: String = ""
     ) {
         self.chatBotId = chatBotId
         self.appTheme = appTheme
@@ -39,6 +41,7 @@ public class AppConfigurationManager {
         self.location = location
         self.latitude = latitude
         self.longitude = longitude
+        self.categoryName = categoryName
     }
     
 }
