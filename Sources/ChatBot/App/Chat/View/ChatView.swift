@@ -143,6 +143,10 @@ struct ChatView: View {
                 if let reply = viewModel.withReply, !reply.isEmpty {
                     sendMessage(message: reply)
                 }
+                let category = viewModel.appConfigurations.categoryName
+                if category != "" {
+                    sendMessage(message: category)
+                }
             }
         }
         

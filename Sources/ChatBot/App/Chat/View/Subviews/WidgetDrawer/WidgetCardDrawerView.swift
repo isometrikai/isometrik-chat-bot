@@ -47,8 +47,8 @@ struct WidgetCardDrawerView: View {
                                     widgetData: widget,
                                     gptUIPreference: gptUIPreference
                                 ) { widget in
-                                    responseCallback?(widget,.cardView)
                                     dismiss()
+                                    responseCallback?(widget,.cardView)
                                 }
                                 .frame(maxHeight: 300)
                                 .padding(.horizontal, 16)
