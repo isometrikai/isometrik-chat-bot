@@ -19,6 +19,7 @@ struct WidgetProductDrawerView: View {
     var gptUIPreference: MyGptUIPreferences?
     
     var responseCallback: ((ChatBotWidget?,WidgetType)->Void)?
+    var responseOptionCallback: ((String?)->Void)?
     
     // MARK: - BODY
     
@@ -65,7 +66,7 @@ struct WidgetProductDrawerView: View {
                             Spacer()
                             ForEach(options, id: \.self) { option in
                                 Button(action: {
-                                    
+                                    responseOptionCallback?(option)
                                 }) {
                                     Text(option)
                                         .padding(.vertical, 8)

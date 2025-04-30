@@ -133,8 +133,10 @@ struct ChatView: View {
                         messageData: messsageData,
                         appTheme: viewModel.appConfigurations.appTheme,
                         gptUIPreference: viewModel.myGptSessionData?.data?.first?.uiPreferences,
-                        responseCallback: handleWidgetAction
-                    )
+                        responseCallback: handleWidgetAction,
+                        responseOptionCallback: { option in
+                            handleWidgetResponseAction(reply: option)
+                        }                    )
                     .presentationDetents([.fraction(0.7)])
                 }
                 
