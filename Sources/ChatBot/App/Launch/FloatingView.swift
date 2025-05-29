@@ -132,7 +132,9 @@ public struct FloatingView: View {
         }
         .opacity((viewModel.myGptSessionData != nil) ? 1 : 0)
         .alert("Error", isPresented: $showAlert) {
-            Button("cancel", role: .cancel) {}
+            Button("cancel", role: .cancel) {
+                dismissHostingController()
+            }
             Button("Try again", role: .none) {
                 fetchGptsContent()
             }
