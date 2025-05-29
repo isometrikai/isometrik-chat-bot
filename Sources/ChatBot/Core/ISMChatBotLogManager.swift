@@ -102,9 +102,7 @@ extension ISMChatBotLogManager {
         if let bodyData = request.httpBody {
             let decoder = JSONDecoder()
             if let json = try? decoder.decode(GPTClientRequestParameters.self, from: bodyData) {
-                param["location"] = "\(json.location)"
                 param["messageToBot"] = "\(json.message)"
-                param["userId"] = "\(json.userId)"
             }
         }
         

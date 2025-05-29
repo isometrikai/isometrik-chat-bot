@@ -80,12 +80,8 @@ public class ChatViewModel: ObservableObject {
                 let agentId = "67a9df239dbfc422720f19b5"
                 
                 let parameters = GPTClientRequestParameters(
-                    chatBotId: Int(appConfigurations.chatBotId) ?? 0,
                     message: message,
                     sessionId: sessionId,
-                    storeCategoryId: appConfigurations.storeCategoryId,
-                    userId: appConfigurations.userId,
-                    location: appConfigurations.location,
                     longitude: "\(appConfigurations.longitude)",
                     latitude: "\(appConfigurations.latitude)",
                     isLoggedIn: false,
